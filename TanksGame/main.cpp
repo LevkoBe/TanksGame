@@ -2,35 +2,82 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <tuple>
+#include <memory>
 
 enum ProjectileType {
-    CannonBall, // basic
-    FireBall,   // burns
-    SnowBall,   // slows down
-    Chip,       // turns into an ally
-    Magnet,     // attracts to itself
-    LazerBeam,  // basically basic
-    Reducer     // makes smaller
+    CannonBall,
+    FireBall,
+    SnowBall,
+    Chip,
+    Magnet,
+    LazerBeam,
+    Reducer
 };
 
-class Tank {
+class GameObject {
 private:
-    int vMove;    // move speed
-    int vShoot;   // fire speed
-    int vReload;  // time of reloading
-    int pHealth;  // health points
-    int pDamage;  // strength of pDamage
-    int pxSize;   // size in pixels
+    int xPos;
+    int yPos;
+    int xVel;
+    int yVel;
+    int xAcc;
+    int yAcc;
+    int size;
+    int maxSpeed;
+    int maxAccel;
+
+public:
+    GameObject(int initialXPos, int initialYPos, int initialXVel, int initialYVel, int initialXAcc, int initialYAcc,
+        int initialSize, int initialMaxSpeed, int initialMaxAccel)
+        : xPos(initialXPos), yPos(initialYPos), xVel(initialXVel), yVel(initialYVel),
+        xAcc(initialXAcc), yAcc(initialYAcc), size(initialSize),
+        maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel) {}
+
+    std::tuple<int, int> getPos() const {
+        return std::make_tuple(xPos, yPos);
+    }
+
+    std::tuple<int, int> getVel() const {
+        return std::make_tuple(xVel, yVel);
+    }
+
+    std::tuple<int, int> getAcc() const {
+        return std::make_tuple(xAcc, yAcc);
+    }
+
+    int getMaxSpeed() const {
+        return maxSpeed;
+    }
+
+    int getMaxAccel() const {
+        return maxAccel;
+    }
+};
+
+class Tank : public GameObject {
+private:
+    int vMove;
+    int vShoot;
+    int vReload;
+    int pHealth;
+    int pDamage;
+    int pxSize;
     ProjectileType projectile;
 
 public:
     Tank(int coefficient = 100) :
-        vMove(coefficient / 100 * 10), vShoot(coefficient / 100 * 20), vReload(coefficient / 100 * 10), pHealth(coefficient / 100 * 100), pDamage(coefficient / 100 * 10), pxSize(coefficient / 100 * 100), projectile(CannonBall) {};
+        GameObject(0, 0, 0, 0, 0, 0, coefficient / 100 * 100, coefficient / 100 * 100, coefficient / 100 * 100),
+        pHealth(coefficient / 100 * 100), pDamage(coefficient / 100 * 10), pxSize(coefficient / 100 * 100),
+        projectile(CannonBall), vMove(coefficient / 100 * 10), vShoot(coefficient / 100 * 20), vReload(coefficient / 100 * 10) {}
+
     Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int size, ProjectileType projectile) :
-        vMove(vMove), vShoot(vShoot), vReload(vReload), pHealth(pHealth), pDamage(pDamage), pxSize(size), projectile(projectile) {};
-    void move(int x, int y) {};
-    void shoot() {};
-    void setProjectileType(ProjectileType projectileType) {};
+        GameObject(0, 0, 0, 0, 0, 0, size, size, size),
+        vMove(vMove), vShoot(vShoot), vReload(vReload), pHealth(pHealth), pDamage(pDamage), pxSize(size), projectile(projectile) {}
+
+    void move(int x, int y) {}
+    void shoot() {}
+    void setProjectileType(ProjectileType projectileType) {}
 };
 
 class Renderer {
@@ -153,7 +200,7 @@ private:
     std::vector<std::vector<bool>> map;
     Tank* user;
     std::vector<Tank> bots;
-    std::unique_ptr<Renderer> renderer;  // Use smart pointer for ownership
+    std::unique_ptr<Renderer> renderer;
 
 public:
     GameRun() : renderer(std::make_unique<Renderer>()) {
@@ -170,9 +217,7 @@ public:
     void run() {
         renderer->run();
     }
-
 };
-
 
 int main() {
     GameRun game;
