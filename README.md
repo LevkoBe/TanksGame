@@ -12,9 +12,9 @@ Main features:
 9. The player wins if his tank is the last on a map.
 
 As yet I'm new to UML diagrams, for this game I created the whole bunch of them:
-- Usecase diagram
+- [Usecase diagram](https://github.com/LevkoBe/TanksGame/blob/master/README.md#usecase-diagram)
+- [State diagram](https://github.com/LevkoBe/TanksGame/blob/master/README.md#state-diagram)
 - Class diagram
-- State diagram
 - Activity diagram
 
 and, maybe most importantly, -
