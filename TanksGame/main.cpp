@@ -4,35 +4,43 @@
 #include <vector>
 #include <tuple>
 #include <memory>
+#include <random>
 
 enum ProjectileType {
-    CannonBall,
-    FireBall,
-    SnowBall,
-    Chip,
-    Magnet,
-    LazerBeam,
-    Reducer
+    CannonBall, // basic
+    FireBall,   // burns
+    SnowBall,   // slows down
+    Chip,       // turns into an ally
+    Magnet,     // attracts to itself
+    LazerBeam,  // basically basic
+    Reducer     // makes smaller
+};
+
+enum ObjectShape {
+    Circle,
+    Squre
 };
 
 class GameObject {
-private:
-    int xPos;
-    int yPos;
-    int xVel;
-    int yVel;
-    int xAcc;
-    int yAcc;
-    int size;
-    int maxSpeed;
-    int maxAccel;
+protected:
+    int xPos = 0;
+    int yPos = 0;
+    int xVel = 0;
+    int yVel = 0;
+    int xAcc = 0;
+    int yAcc = 0;
+    int size = 10;
+    int maxSpeed = 100;
+    int maxAccel = 10;
+    int angle = 0;
+    ObjectShape shape = Circle;
 
 public:
     GameObject(int initialXPos, int initialYPos, int initialXVel, int initialYVel, int initialXAcc, int initialYAcc,
-        int initialSize, int initialMaxSpeed, int initialMaxAccel)
+        int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape)
         : xPos(initialXPos), yPos(initialYPos), xVel(initialXVel), yVel(initialYVel),
         xAcc(initialXAcc), yAcc(initialYAcc), size(initialSize),
-        maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel) {}
+        maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel), angle(angle), shape(shape) {}
 
     std::tuple<int, int> getPos() const {
         return std::make_tuple(xPos, yPos);
@@ -67,12 +75,12 @@ private:
 
 public:
     Tank(int coefficient = 100) :
-        GameObject(0, 0, 0, 0, 0, 0, coefficient / 100 * 100, coefficient / 100 * 100, coefficient / 100 * 100),
+        GameObject(0, 0, 0, 0, 0, 0, coefficient / 100 * 100, coefficient / 100 * 100, coefficient / 100 * 100, -90, Circle),
         pHealth(coefficient / 100 * 100), pDamage(coefficient / 100 * 10), pxSize(coefficient / 100 * 100),
         projectile(CannonBall), vMove(coefficient / 100 * 10), vShoot(coefficient / 100 * 20), vReload(coefficient / 100 * 10) {}
 
     Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int size, ProjectileType projectile) :
-        GameObject(0, 0, 0, 0, 0, 0, size, size, size),
+        GameObject(0, 0, 0, 0, 0, 0, size, size, size, -90, Circle),
         vMove(vMove), vShoot(vShoot), vReload(vReload), pHealth(pHealth), pDamage(pDamage), pxSize(size), projectile(projectile) {}
 
     void move(int x, int y) {}
@@ -195,11 +203,12 @@ private:
 
 class GameRun {
 private:
-    int gridSize;
     int level;
-    std::vector<std::vector<bool>> map;
-    Tank* user;
+    int gridSize = 10;
+    std::vector<Tank> users;
     std::vector<Tank> bots;
+    std::vector<GameObject> walls;
+    std::vector<GameObject> projectiles;
     std::unique_ptr<Renderer> renderer;
 
 public:
@@ -209,6 +218,139 @@ public:
 
     void createMap() {
         // creating an array;
+        auto map = std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, 0));
+        auto special = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>{ {0, gridSize}, { gridSize, 0 }, { gridSize, gridSize } });
+        auto visited = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>{ {0, gridSize}, { gridSize, 0 }, { gridSize, gridSize }, {0, 0} });
+        // (*map)[0][0] = (*map)[0][gridSize] = (*map)[gridSize][0] = (*map)[gridSize][gridSize] = 1;
+        for (int i = 1; i < 4; i++)
+        {
+            auto position = std::make_pair(0, 0);
+            while ((*map)[position.first][position.second] == 0)
+            {
+                auto neighbours = getNeighbours(map, std::make_shared<std::pair<int, int>>(position), special);
+                (*map)[position.first][position.second] = 1;
+                auto newPair = getRandomPair(neighbours, visited);
+                if (neighbours->empty()) {
+                    position = visited->back(); // DFS
+                }
+                else {
+                    visited->push_back(position);
+                    position = newPair;
+                }
+            }
+        }
+
+    }
+
+    std::pair<int, int> getRandomPair(const std::shared_ptr<std::vector<std::pair<int, int>>>& neighbours, const std::shared_ptr<std::vector<std::pair<int, int>>>& visited) {
+        if (!neighbours || neighbours->empty()) {
+            return visited->back();
+        }
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        std::uniform_int_distribution<size_t> distribution(0, neighbours->size() - 1);
+        size_t randomIndex = distribution(gen);
+
+        return (*neighbours)[randomIndex];
+    }
+
+    std::shared_ptr<std::vector<std::pair<int, int>>> getNeighbours(std::shared_ptr<std::vector<std::vector<bool>>> map,
+        std::shared_ptr<std::pair<int, int>> toCheck, std::shared_ptr<std::vector<std::pair<int, int>>> special) {
+
+        auto neighbours = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>());
+
+        // checking whether it's inside the gamefield
+        if (!insideTheGameField(map, *toCheck))
+        {
+            return neighbours;
+        }
+
+        // checking whether we're close to destination
+
+        auto coordinates = std::make_pair(toCheck->first + 1, toCheck->second);
+        if (std::find(special->begin(), special->end(), coordinates) != special->end())
+        {
+            neighbours->push_back(coordinates);
+            return neighbours;
+        }
+        coordinates = std::make_pair(toCheck->first - 1, toCheck->second);
+        if (std::find(special->begin(), special->end(), coordinates) != special->end())
+        {
+            neighbours->push_back(coordinates);
+            return neighbours;
+        }
+        coordinates = std::make_pair(toCheck->first, toCheck->second + 1);
+        if (std::find(special->begin(), special->end(), coordinates) != special->end())
+        {
+            neighbours->push_back(coordinates);
+            return neighbours;
+        }
+        coordinates = std::make_pair(toCheck->first, toCheck->second - 1);
+        if (std::find(special->begin(), special->end(), coordinates) != special->end())
+        {
+            neighbours->push_back(coordinates);
+            return neighbours;
+        }
+
+        // checking whether we hit visited spots
+
+        coordinates = std::make_pair(toCheck->first + 1, toCheck->second);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) != neighbours->end()      // we already have it
+            && validNeighbours(map, coordinates)                                                        // non-zero neighbours
+            && (*map)[toCheck->first][toCheck->second] != 1)                                            // our current spot
+        {
+            neighbours->push_back(coordinates);
+        }
+        coordinates = std::make_pair(toCheck->first - 1, toCheck->second);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) != neighbours->end()      // we already have it
+            && validNeighbours(map, coordinates)                                                        // non-zero neighbours
+            && (*map)[toCheck->first][toCheck->second] != 1)                                            // our current spot
+        {
+            neighbours->push_back(coordinates);
+        }
+        coordinates = std::make_pair(toCheck->first, toCheck->second + 1);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) != neighbours->end()      // we already have it
+            && validNeighbours(map, coordinates)                                                        // non-zero neighbours
+            && (*map)[toCheck->first][toCheck->second] != 1)                                            // our current spot
+        {
+            neighbours->push_back(coordinates);
+        }
+        coordinates = std::make_pair(toCheck->first, toCheck->second - 1);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) != neighbours->end()      // we already have it
+            && validNeighbours(map, coordinates)                                                        // non-zero neighbours
+            && (*map)[toCheck->first][toCheck->second] != 1)                                            // our current spot
+        {
+            neighbours->push_back(coordinates);
+        }
+
+        return neighbours;
+    }
+
+    bool validNeighbours(std::shared_ptr<std::vector<std::vector<bool>>> map, std::pair<int, int> toCheck) {
+
+        // checking whether we hit visited spots
+        if ((insideTheGameField(map, std::make_pair(toCheck.first + 1, toCheck.second)) && (*map)[toCheck.first + 1][toCheck.second] == 1) ||
+            (insideTheGameField(map, std::make_pair(toCheck.first - 1, toCheck.second)) && (*map)[toCheck.first - 1][toCheck.second] == 1) ||
+            (insideTheGameField(map, std::make_pair(toCheck.first, toCheck.second + 1)) && (*map)[toCheck.first][toCheck.second + 1] == 1) ||
+            (insideTheGameField(map, std::make_pair(toCheck.first, toCheck.second - 1)) && (*map)[toCheck.first][toCheck.second - 1] == 1))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    bool insideTheGameField(std::shared_ptr<std::vector<std::vector<bool>>> map, std::pair<int, int> toCheck) {
+        if (toCheck.first < 0 || toCheck.second < 0 || toCheck.first >= gridSize || toCheck.second >= gridSize)
+        {
+            return false;
+        }
+        return true;
     }
 
     void reset() {}
