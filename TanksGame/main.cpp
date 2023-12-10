@@ -21,6 +21,13 @@ enum ObjectShape {
     Squre
 };
 
+enum MazeCell {
+    CurrentSpot,
+    Path,
+    Wall, // Wall
+    Destination
+};
+
 class GameObject {
 protected:
     int xPos = 0;
@@ -216,97 +223,114 @@ public:
         createMap();
     }
 
-    void printMatrix(const std::shared_ptr<std::vector<std::vector<bool>>>& matrix) {
+    void printMatrix(const std::shared_ptr<std::vector<std::vector<MazeCell>>>& matrix) {
         std::system("cls");
         for (const auto& row : *matrix) {
-            for (bool value : row) {
-                if (value == 0)
-                {
+            for (MazeCell value : row) {
+                if (value == Wall) {
                     std::cout << ". ";
                 }
-                else {
+                else if (value == Path) {
                     std::cout << "# ";
+                }
+                else if (value == CurrentSpot) {
+                    std::cout << "* ";
+                }
+                else if (value == Destination) {
+                    std::cout << "+ ";
                 }
             }
             std::cout << std::endl;
         }
     }
 
-    void createMap() {
-        // creating an array;
-        auto map = std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, 0));
-        auto special = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>{ {0, gridSize - 1 }, { gridSize - 1, 0 }, { gridSize - 1, gridSize - 1 } });
+    std::vector<std::pair<int, int>> nearestCells(std::shared_ptr<std::pair<int, int>> cell) {
+        auto nearest = std::vector<std::pair<int, int>>();
+        if (cell->first + 1 >= 0 && cell->second >= 0 && cell->first + 1 < gridSize && cell->second < gridSize) {
+            nearest.push_back(std::make_pair(cell->first + 1, cell->second));
+        }
+        if (cell->first - 1 >= 0 && cell->second >= 0 && cell->first - 1 < gridSize && cell->second < gridSize) {
+            nearest.push_back(std::make_pair(cell->first - 1, cell->second));
+        }
+        if (cell->first >= 0 && cell->second + 1 >= 0 && cell->first < gridSize && cell->second + 1 < gridSize) {
+            nearest.push_back(std::make_pair(cell->first, cell->second + 1));
+        }
+        if (cell->first >= 0 && cell->second - 1 >= 0 && cell->first < gridSize && cell->second - 1 < gridSize) {
+            nearest.push_back(std::make_pair(cell->first , cell->second - 1));
+        }
+        return nearest;
+    }
 
+    void createMap() {
+        auto map = std::make_shared<std::vector<std::vector<MazeCell>>>(gridSize, std::vector<MazeCell>(gridSize, Wall));   // no path
+        (*map)[0][gridSize - 1] = (*map)[gridSize - 1][0] = (*map)[gridSize - 1][gridSize - 1] = Destination;               // corners
+        
         for (int i = 1; i < 4; i++) {
             auto visited = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>());
 
-            auto position = startingPoint(map, special);
-            while (std::find(special->begin(), special->end(), position) == special->end()) {
-                (*map)[position.first][position.second] = 1;
-                auto neighbours = getNeighbours(map, std::make_shared<std::pair<int, int>>(position), special);
-                auto newPair = getRandomPair(neighbours, visited);
+            auto position = std::make_shared<std::pair<int, int>>(startingPoint(map));
+            while (true) { // break when change destination into current
+                auto neighbours = getNeighbours(map, position);
+                auto newPair = getRandomPair(map, neighbours, visited); // if was given dest
+                (*map)[position->first][position->second] = Path;
+                if (!neighbours->empty())
+                {
+                    visited->push_back(*position);
+                }
+                position = std::make_shared<std::pair<int, int>>(newPair);
+                if ((*map)[position->first][position->second] == Destination)
+                {
+                    (*map)[position->first][position->second] = Path;
+                    printMatrix(map);
+                    break;
+                }
+                (*map)[position->first][position->second] = CurrentSpot;
                 printMatrix(map);
-                if (neighbours->empty()) {
-                    position = visited->back(); // DFS
-                    visited->pop_back();
-                }
-                else {
-                    visited->push_back(position);
-                    position = newPair;
+            }
+            for (int i = 0; i < gridSize; i++)
+            {
+                for (int j = 0; j < gridSize; j++)
+                {
+                    if ((*map)[i][j] == Path)
+                    {
+                        (*map)[i][j] = Destination;
+                    }
                 }
             }
-            // markDestination(map, position, special);
-            if (!(*map)[0][gridSize - 1] && !(*map)[gridSize - 1][0] && !(*map)[gridSize - 1][gridSize - 1]) {
-                special->clear();
+            if (i == 1) {
+                (*map)[0][gridSize - 1] = Wall;
+                (*map)[gridSize - 1][0] = Wall;
+                (*map)[gridSize - 1][gridSize - 1] = Wall;
+                (*map)[position->first][position->second] = Destination;
             }
-            special->insert(special->end(), visited->begin(), visited->end());
             printMatrix(map);
         }
     }
 
-    void markDestination(std::shared_ptr<std::vector<std::vector<bool>>> map, std::pair<int, int> position, std::shared_ptr<std::vector<std::pair<int, int>>> special) {
-
-        auto neighbour = std::make_pair(position.first + 1, position.second);
-        if (insideTheGameField(map, neighbour) && std::find(special->begin(), special->end(), neighbour) != special->end()) {
-            (*map)[neighbour.first][neighbour.second] = 1;
-            return;
+    std::pair<int, int> startingPoint(std::shared_ptr<std::vector<std::vector<MazeCell>>> map) {
+        
+        for (auto& candidate : { std::make_pair(0, 0), std::make_pair(0, gridSize - 1), std::make_pair(gridSize - 1, 0), std::make_pair(gridSize - 1, gridSize - 1) })
+        {
+            bool propper = true;
+            for (auto& nearest : nearestCells(std::make_shared<std::pair<int, int>>(candidate))) {
+                if ((*map)[nearest.first][nearest.second] != Wall) {
+                    propper = false;
+                }
+            }
+            if (propper)
+            {
+                return candidate;
+            }
         }
-        neighbour = std::make_pair(position.first - 1, position.second);
-        if (insideTheGameField(map, neighbour) && std::find(special->begin(), special->end(), neighbour) != special->end()) {
-            (*map)[neighbour.first][neighbour.second] = 1;
-            return;
-        }
-        neighbour = std::make_pair(position.first, position.second + 1);
-        if (insideTheGameField(map, neighbour) && std::find(special->begin(), special->end(), neighbour) != special->end()) {
-            (*map)[neighbour.first][neighbour.second] = 1;
-            return;
-        }
-        neighbour = std::make_pair(position.first, position.second - 1);
-        if (insideTheGameField(map, neighbour) && std::find(special->begin(), special->end(), neighbour) != special->end()) {
-            (*map)[neighbour.first][neighbour.second] = 1;
-        }
+        return std::make_pair(0, 0);
     }
 
-    std::pair<int, int> startingPoint(std::shared_ptr<std::vector<std::vector<bool>>> map, std::shared_ptr<std::vector<std::pair<int, int>>> special) {
-        auto position = std::make_pair(0, 0);
-        if (!(*map)[0][0]) {
-            return position;
-        }
-        else if (!(*map)[0][gridSize - 1]) { position.second = gridSize - 1; }
-        else if (!(*map)[gridSize - 1][0]) { position.first = gridSize - 1; }
-        else {
-            position.first = gridSize - 1;
-            position.second = gridSize - 1;
-        }
-        special->erase(std::remove_if(special->begin(), special->end(), [position](const std::pair<int, int>& p) {
-            return p == position;
-            }), special->end());
-        return position;
-    }
-
-    std::pair<int, int> getRandomPair(const std::shared_ptr<std::vector<std::pair<int, int>>>& neighbours, const std::shared_ptr<std::vector<std::pair<int, int>>>& visited) {
+    std::pair<int, int> getRandomPair(std::shared_ptr<std::vector<std::vector<MazeCell>>> map,
+    const std::shared_ptr<std::vector<std::pair<int, int>>>& neighbours, std::shared_ptr<std::vector<std::pair<int, int>>> visited) {
         if (!neighbours || neighbours->empty()) {
-            return visited->back();
+            auto toReturn = visited->back();
+            visited->pop_back();
+            return toReturn;
         }
 
         std::random_device rd;
@@ -318,124 +342,104 @@ public:
         return (*neighbours)[randomIndex];
     }
 
-    bool closeToDestination(std::shared_ptr<std::vector<std::pair<int, int>>> special, std::pair<int, int> toCheck) {
+    bool closeToDestination(std::shared_ptr<std::vector<std::vector<MazeCell>>> map, std::pair<int, int> toCheck) {
         auto coordinates = std::make_pair(toCheck.first + 1, toCheck.second);
-        if (std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination) {
             return true;
         }
         coordinates = std::make_pair(toCheck.first - 1, toCheck.second);
-        if (std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination) {
             return true;
         }
         coordinates = std::make_pair(toCheck.first, toCheck.second + 1);
-        if (std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination) {
             return true;
         }
         coordinates = std::make_pair(toCheck.first, toCheck.second - 1);
-        if (std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination) {
             return true;
         }
         return false;
     }
 
-    std::shared_ptr<std::vector<std::pair<int, int>>> getNeighbours(std::shared_ptr<std::vector<std::vector<bool>>> map,
-        std::shared_ptr<std::pair<int, int>> toCheck, std::shared_ptr<std::vector<std::pair<int, int>>> special) {
+    std::shared_ptr<std::vector<std::pair<int, int>>> getNeighbours(std::shared_ptr<std::vector<std::vector<MazeCell>>> map, std::shared_ptr<std::pair<int, int>> currentSpot) {
 
         auto neighbours = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>());
 
-        // checking whether it's inside the gamefield
-        if (!insideTheGameField(map, *toCheck))
-        {
-            return neighbours;
-        }
+        // checking whether it's inside the gamefield -- del
+
 
         // checking whether we're close to destination
 
-        auto coordinates = std::make_pair(toCheck->first + 1, toCheck->second);
-        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        auto coordinates = std::make_pair(currentSpot->first + 1, currentSpot->second);
+        if ((insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination)) {
             neighbours->push_back(coordinates);
             return neighbours;
         }
-        coordinates = std::make_pair(toCheck->first - 1, toCheck->second);
-        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        coordinates = std::make_pair(currentSpot->first - 1, currentSpot->second);
+        if ((insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination)) {
             neighbours->push_back(coordinates);
             return neighbours;
         }
-        coordinates = std::make_pair(toCheck->first, toCheck->second + 1);
-        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        coordinates = std::make_pair(currentSpot->first, currentSpot->second + 1);
+        if ((insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination)) {
             neighbours->push_back(coordinates);
             return neighbours;
         }
-        coordinates = std::make_pair(toCheck->first, toCheck->second - 1);
-        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
-        {
+        coordinates = std::make_pair(currentSpot->first, currentSpot->second - 1);
+        if ((insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] == Destination)) {
             neighbours->push_back(coordinates);
             return neighbours;
         }
 
-        // checking whether we hit visited spots
+        // checking whether we step on the path
 
-        coordinates = std::make_pair(toCheck->first + 1, toCheck->second);
-        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
-            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()      // we already have it
-            && validNeighbours(map, coordinates, toCheck))                                              // non-zero neighbours
-        {
+        coordinates = std::make_pair(currentSpot->first + 1, currentSpot->second);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != Path && nonPathNeighbours(map, coordinates)
+        && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()) {
             neighbours->push_back(coordinates);
         }
-        coordinates = std::make_pair(toCheck->first - 1, toCheck->second);
-        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
-            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()      // we already have it
-            && validNeighbours(map, coordinates, toCheck))                                              // non-zero neighbours
-        {
+        coordinates = std::make_pair(currentSpot->first - 1, currentSpot->second);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != Path && nonPathNeighbours(map, coordinates)
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()) {
             neighbours->push_back(coordinates);
         }
-        coordinates = std::make_pair(toCheck->first, toCheck->second + 1);
-        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
-            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()      // we already have it
-            && validNeighbours(map, coordinates, toCheck))                                              // non-zero neighbours
-        {
+        coordinates = std::make_pair(currentSpot->first, currentSpot->second + 1);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != Path && nonPathNeighbours(map, coordinates)
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()) {
             neighbours->push_back(coordinates);
         }
-        coordinates = std::make_pair(toCheck->first, toCheck->second - 1);
-        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != 1  // we hit visited spot
-            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()      // we already have it
-            && validNeighbours(map, coordinates, toCheck))                                              // non-zero neighbours
-        {
+        coordinates = std::make_pair(currentSpot->first, currentSpot->second - 1);
+        if (insideTheGameField(map, coordinates) && (*map)[coordinates.first][coordinates.second] != Path && nonPathNeighbours(map, coordinates)
+            && std::find(neighbours->begin(), neighbours->end(), coordinates) == neighbours->end()) {
             neighbours->push_back(coordinates);
         }
 
         return neighbours;
     }
 
-    bool validNeighbours(std::shared_ptr<std::vector<std::vector<bool>>> map, std::pair<int, int> toCheck, std::shared_ptr<std::pair<int, int>> toLeave) {
-
-        // checking whether we hit visited spots
-        auto firstNeighbour = std::make_pair(toCheck.first + 1, toCheck.second);
-        auto secondNeighbour = std::make_pair(toCheck.first - 1, toCheck.second);
-        auto thirdNeighbour = std::make_pair(toCheck.first, toCheck.second + 1);
-        auto fourthNeighbour = std::make_pair(toCheck.first, toCheck.second - 1);
-        if ((insideTheGameField(map, firstNeighbour) && !(firstNeighbour.first == toLeave->first &&
-                firstNeighbour.second == toLeave->second) && (*map)[firstNeighbour.first][firstNeighbour.second] == 1) ||
-            (insideTheGameField(map, secondNeighbour) && !(secondNeighbour.first == toLeave->first &&
-                secondNeighbour.second == toLeave->second) && (*map)[secondNeighbour.first][secondNeighbour.second] == 1) ||
-            (insideTheGameField(map, thirdNeighbour) && !(thirdNeighbour.first == toLeave->first &&
-                thirdNeighbour.second == toLeave->second) && (*map)[thirdNeighbour.first][thirdNeighbour.second] == 1) ||
-            (insideTheGameField(map, fourthNeighbour) && !(fourthNeighbour.first == toLeave->first &&
-                fourthNeighbour.second == toLeave->second) && (*map)[fourthNeighbour.first][fourthNeighbour.second] == 1))
-        {
+    bool nonPathNeighbours(std::shared_ptr<std::vector<std::vector<MazeCell>>> map, std::pair<int, int> toCheck) {
+        
+        auto neighbour = std::make_pair(toCheck.first + 1, toCheck.second);
+        if (GameRun::insideTheGameField(map, neighbour) && (*map)[neighbour.first][neighbour.second] == Path) {
+            return false;
+        }
+        neighbour = std::make_pair(toCheck.first - 1, toCheck.second);
+        if (insideTheGameField(map, neighbour) && (*map)[neighbour.first][neighbour.second] == Path) {
+            return false;
+        }
+        neighbour = std::make_pair(toCheck.first, toCheck.second + 1);
+        if (insideTheGameField(map, neighbour) && (*map)[neighbour.first][neighbour.second] == Path) {
+            return false;
+        }
+        neighbour = std::make_pair(toCheck.first, toCheck.second - 1);
+        if (insideTheGameField(map, neighbour) && (*map)[neighbour.first][neighbour.second] == Path) {
             return false;
         }
         return true;
     }
 
-    bool insideTheGameField(std::shared_ptr<std::vector<std::vector<bool>>> map, std::pair<int, int> toCheck) {
+    bool insideTheGameField(std::shared_ptr<std::vector<std::vector<MazeCell>>> map, std::pair<int, int> toCheck) {
         if (toCheck.first < 0 || toCheck.second < 0 || toCheck.first >= gridSize || toCheck.second >= gridSize)
         {
             return false;
