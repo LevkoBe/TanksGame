@@ -241,7 +241,7 @@ public:
             auto visited = std::make_shared<std::vector<std::pair<int, int>>>(std::vector<std::pair<int, int>>());
 
             auto position = startingPoint(map, special);
-            while (visited->empty() || !closeToDestination(special, visited->back())) {
+            while (std::find(special->begin(), special->end(), position) == special->end()) {
                 (*map)[position.first][position.second] = 1;
                 auto neighbours = getNeighbours(map, std::make_shared<std::pair<int, int>>(position), special);
                 auto newPair = getRandomPair(neighbours, visited);
@@ -255,7 +255,7 @@ public:
                     position = newPair;
                 }
             }
-            markDestination(map, position, special);
+            // markDestination(map, position, special);
             if (!(*map)[0][gridSize - 1] && !(*map)[gridSize - 1][0] && !(*map)[gridSize - 1][gridSize - 1]) {
                 special->clear();
             }
@@ -356,25 +356,25 @@ public:
         // checking whether we're close to destination
 
         auto coordinates = std::make_pair(toCheck->first + 1, toCheck->second);
-        if (closeToDestination(special, coordinates))
+        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
         {
             neighbours->push_back(coordinates);
             return neighbours;
         }
         coordinates = std::make_pair(toCheck->first - 1, toCheck->second);
-        if (closeToDestination(special, coordinates))
+        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
         {
             neighbours->push_back(coordinates);
             return neighbours;
         }
         coordinates = std::make_pair(toCheck->first, toCheck->second + 1);
-        if (closeToDestination(special, coordinates))
+        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
         {
             neighbours->push_back(coordinates);
             return neighbours;
         }
         coordinates = std::make_pair(toCheck->first, toCheck->second - 1);
-        if (closeToDestination(special, coordinates))
+        if (closeToDestination(special, coordinates) || std::find(special->begin(), special->end(), coordinates) != special->end())
         {
             neighbours->push_back(coordinates);
             return neighbours;
