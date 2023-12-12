@@ -4,7 +4,7 @@
 
 
 int main() {
-    GameRun game;
+    GameRun game(800, 10);
     Renderer renderer(800, game);
     renderer.run();
 

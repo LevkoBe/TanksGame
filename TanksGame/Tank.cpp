@@ -8,3 +8,19 @@ Tank::Tank(int coefficient) :
 Tank::Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int size, ProjectileType projectile) :
     GameObject(0, 0, size, size, size, -90, Circle),
     vMove(vMove), vShoot(vShoot), vReload(vReload), pHealth(pHealth), pDamage(pDamage), pxSize(size), projectile(projectile) {}
+
+void Tank::rotate(double angle) {
+    rotationAngle += angle;
+}
+
+void Tank::accelerate(int extent) {
+
+}
+
+int Tank::getVMove() const { return vMove; }
+int Tank::getVShoot() const { return vShoot; }
+int Tank::getVReload() const { return vReload; }
+int Tank::getPHealth() const { return pHealth; }
+int Tank::getPDamage() const { return pDamage; }
+int Tank::getPxSize() const { return pxSize; }
+ProjectileType Tank::getProjectile() const { return projectile; }

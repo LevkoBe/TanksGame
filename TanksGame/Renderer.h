@@ -6,36 +6,27 @@
 
 class Renderer {
 private:
-    int windowSize = 800;
-    float rotationAngle = 0.0f;
-    const float rotationSpeed = 5.0f;
-    const float movementSpeed = 5.0f;
-    sf::RenderWindow window;
+    const double rotationSpeed = 5.0;
+    const double movementSpeed = 5.0;
     sf::Font font;
-    sf::Text text;
+    sf::Text text;  // todo: text.setString(userInput);
     sf::Texture texture;
-    sf::Sprite sprite;
-    std::string userInput = "";
-    GameRun gamerun;
-
+    sf::Sprite sprite; // sprite.setScale(sprite.getScale() * 0.9);
+    std::vector<sf::Sprite> users; // expl: at first we pack here all sprites, then gradually delete each destroyed.
+    std::vector<std::pair<int, int>> usersPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size
+    std::vector<sf::Sprite> bots;
+    std::vector<std::pair<int, int>> botsPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size
+    std::vector<sf::Sprite> walls;
+    std::vector<std::pair<int, int>> wallsPositions = std::vector<std::pair<int, int>>(); // extra: cracks
+    std::vector<sf::Sprite> projectiles;
+    std::vector<std::pair<int, int>> projectilesPositions = std::vector<std::pair<int, int>>(); // todo: tuple, size -> angles
+    // todo: move positions from here to methods
 public:
-    Renderer(int windowSize, GameRun gamerun);
+    Renderer(int windowSize);
 
-    void run();
+    void render(sf::RenderWindow& window);
 
 private:
-
-    void initWindow();
-
-    void update();
-
-    void render();
-
-    void processEvents();
-
-    void handleTextEvent(sf::Event& event);
-
-    void handleKeyEvent(sf::Event& event);
 
     void moveTankForward();
 };

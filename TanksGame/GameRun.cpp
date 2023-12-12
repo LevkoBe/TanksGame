@@ -1,11 +1,11 @@
 #include "GameRun.h"
 
-GameRun::GameRun() {
+GameRun::GameRun(int windowSize, int gridSize): windowSize(windowSize), gridSize(gridSize) {
     createMap();
 }
 
 void GameRun::createMap() {
-    Map map;
+    Map map(gridSize);
     int wallSize = windowSize / gridSize;
     for (int i = 0; i < gridSize; i++)
     {

@@ -15,23 +15,27 @@ protected:
     int yVel = 0;
     int xAcc = 0;
     int yAcc = 0;
-    int size = 10;
+    int change = 10; // standardized increase for velocity, acceleration, and position
+    int size = 100;
     int maxSpeed = 100;
     int maxAccel = 10;
     int healthPoints = 100;
-    int angle = 0;
     ObjectShape shape = Circle;
 
 public:
     GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape);
 
-    std::tuple<int, int> getPos() const;
+    std::pair<int, int> getPos() const;
 
-    std::tuple<int, int> getVel() const;
+    std::pair<int, int> getVel() const;
 
-    std::tuple<int, int> getAcc() const;
+    std::pair<int, int> getAcc() const;
 
     int getMaxSpeed() const;
 
     int getMaxAccel() const;
+
+    void scale(double scales) {
+        size *= scales;
+    }
 };
