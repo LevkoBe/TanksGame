@@ -15,7 +15,7 @@ class GameManager
 	sf::RenderWindow window;
 
 public:
-	GameManager(int windowSize, int gridSize);
+	GameManager(int windowSize, int gridSize, int difficulty);
 	
 	void run();
 

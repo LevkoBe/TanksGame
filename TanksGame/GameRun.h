@@ -1,11 +1,14 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include "GameObject.h"
 #include "Map.h"
 #include "Tank.h"
 #include "Commands.h" // todo: check if needed line
 #include "Projectile.h"
+#include "GameState.h"
+
 
 enum ControlMode {
     LeftUpRightDown,
@@ -19,14 +22,14 @@ private:
     int level;
     int windowSize = 800;
     int gridSize = 10;
-    Tank userTank;
     ControlMode mode = RotateAcceleration;
+    std::shared_ptr<Tank> userTank;
     std::shared_ptr<std::vector<Tank>> bots = std::make_shared<std::vector<Tank>>();
     std::shared_ptr<std::vector<GameObject>> walls = std::make_shared<std::vector<GameObject>>();
     std::shared_ptr<std::vector<Projectile>> projectiles = std::make_shared<std::vector<Projectile>>();
 
 public:
-    GameRun(int windowSize, int gridSize);
+    GameRun(int windowSize, int gridSize, int difficulty);
 
     void createMap();
 
@@ -44,10 +47,10 @@ public:
                 changeSize(0.9);
                 break;
             case RotateClockWise:
-                userTank.rotate(0.1);
+                userTank->rotate(0.1);
                 break;
             case RotateCounterClockWise:
-                userTank.rotate(-0.1);
+                userTank->rotate(-0.1);
                 break;
             case MoveForward:
                 setSpeed(1);
@@ -68,6 +71,15 @@ public:
         // todo: move bots
     }
 
+    GameState positions() {
+        GameState state;
+        state.userTankPosition = userTank->getPos();
+        state.walls = walls;
+        state.bots = bots;
+        state.projectiles = projectiles;
+        return state;
+    }
+
     void setSpeed(int extent) {
         switch (mode)
         {
@@ -78,23 +90,23 @@ public:
         case RotateVelocity:
             break;
         case RotateAcceleration:
-            userTank.accelerate(extent);
+            userTank->accelerate(extent);
         default:
             break;
         }
     }
 
     void moveUserTank() { // todo: nullify when collision
-        userTank.speedUp(userTank.getAcceleration()); // todo: check coefficients system
-        int xExpected = userTank.getPos().first + userTank.getVel().first;
-        int yExpected = userTank.getPos().second + userTank.getVel().second;
+        userTank->speedUp(userTank->getAcceleration()); // todo: check coefficients system
+        int xExpected = userTank->getPos().first + userTank->getVel().first;
+        int yExpected = userTank->getPos().second + userTank->getVel().second;
         bool stopTheTank = false;
 
         if (!insideGameField(xExpected, yExpected)) { return; }
 
         for (auto& wall : *walls)
         { // collisions with walls
-            if (squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), xExpected, yExpected, userTank.getSize() / 2))
+            if (squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), xExpected, yExpected, userTank->getSize() / 2))
             {
                 stopTheTank = true;
             }
@@ -102,7 +114,7 @@ public:
 
         for (auto& bot : *bots)
         { // collisions with bots
-            if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize(), xExpected, yExpected, userTank.getSize() / 2))
+            if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize(), xExpected, yExpected, userTank->getSize() / 2))
             {
                 stopTheTank = true;
             }
@@ -110,9 +122,9 @@ public:
 
         for (auto& projectile : *projectiles)
         { // collisions with projectiles
-            if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize(), xExpected, yExpected, userTank.getSize() / 2))
+            if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize(), xExpected, yExpected, userTank->getSize() / 2))
             {
-                if (projectile.destroyObject(userTank)) {
+                if (projectile.destroyObject(*userTank)) {
                     std::cout << "Game over!" << std::endl;
                 }
             }
@@ -120,7 +132,7 @@ public:
 
         if (stopTheTank)
         {
-            userTank.speedUp(-userTank.getSpeed() / userTank.getChange());
+            userTank->speedUp(-userTank->getSpeed() / userTank->getChange());
         }
         
         // max speed
@@ -160,7 +172,7 @@ public:
 
     void changeSize(double increase) {
         // todo: check if smaller than a cell;
-        userTank.scale(increase);
+        userTank->scale(increase);
     }
 
     void run() {}

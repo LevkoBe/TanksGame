@@ -1,6 +1,6 @@
 #include "GameManager.h"
 
-GameManager::GameManager(int windowSize, int gridSize) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game"), game(windowSize, gridSize), renderer(windowSize) {};
+GameManager::GameManager(int windowSize, int gridSize, int difficulty) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game"), game(windowSize, gridSize, difficulty), renderer(windowSize) {};
 
 void GameManager::run() {
 	initWindow();

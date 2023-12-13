@@ -1,7 +1,11 @@
 #include "GameRun.h"
 
-GameRun::GameRun(int windowSize, int gridSize): windowSize(windowSize), gridSize(gridSize) {
+GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty * 10)) {
     createMap();
+    for (int i = 0; i < difficulty; i++)
+    {
+        bots->push_back(Tank(difficulty * 10));
+    }
 }
 
 void GameRun::createMap() {

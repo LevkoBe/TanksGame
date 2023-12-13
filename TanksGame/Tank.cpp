@@ -28,7 +28,7 @@ void Tank::speedUp(int extent) {
 }
 
 int Tank::getAcceleration() const {
-    return sqrt(xAcc * xAcc + yAcc * yAcc);
+    return sqrt(static_cast<double>(xAcc * xAcc + yAcc * yAcc));
 }
 
 int Tank::getVMove() const { return vMove; }

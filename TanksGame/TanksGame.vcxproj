@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BotTank.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -145,11 +146,13 @@
     <ClCompile Include="UserCommandHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BotTank.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameRun.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Projectiles.h" />
