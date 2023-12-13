@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <tuple>
+#include <cmath>
 
 enum ObjectShape {
     Circle,
@@ -20,7 +21,6 @@ protected:
     int maxSpeed = 100;
     int maxAccel = 10;
     int healthPoints = 100;
-    ObjectShape shape = Circle;
 
 public:
     GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape);
@@ -31,11 +31,17 @@ public:
 
     std::pair<int, int> getAcc() const;
 
+    int getSize() const;
+
+    int getChange() const;
+
+    double getSpeed() const;
+
+    bool withStandTheShot(int damage);
+
     int getMaxSpeed() const;
 
     int getMaxAccel() const;
 
-    void scale(double scales) {
-        size *= scales;
-    }
+    void scale(double scales);
 };

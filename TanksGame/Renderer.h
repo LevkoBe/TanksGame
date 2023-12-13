@@ -8,6 +8,7 @@ class Renderer {
 private:
     const double rotationSpeed = 5.0;
     const double movementSpeed = 5.0;
+    const int windowSize = 800;
     sf::Font font;
     sf::Text text;  // todo: text.setString(userInput);
     sf::Texture texture;
@@ -25,8 +26,4 @@ public:
     Renderer(int windowSize);
 
     void render(sf::RenderWindow& window);
-
-private:
-
-    void moveTankForward();
 };

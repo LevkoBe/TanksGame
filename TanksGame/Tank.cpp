@@ -14,7 +14,21 @@ void Tank::rotate(double angle) {
 }
 
 void Tank::accelerate(int extent) {
+    double angleRadians = rotationAngle * M_PI / 180.0;
 
+    xAcc += extent * change * std::cos(angleRadians);
+    yAcc += extent * change * std::sin(angleRadians);
+}
+
+void Tank::speedUp(int extent) {
+    double angleRadians = rotationAngle * M_PI / 180.0;
+
+    xVel += extent * change * std::cos(angleRadians);
+    yVel += extent * change * std::sin(angleRadians);
+}
+
+int Tank::getAcceleration() const {
+    return sqrt(xAcc * xAcc + yAcc * yAcc);
 }
 
 int Tank::getVMove() const { return vMove; }

@@ -1,12 +1,10 @@
 #include <iostream>
-#include "GameRun.h"
-#include "Renderer.h"
+#include "GameManager.h"
 
 
 int main() {
-    GameRun game(800, 10);
-    Renderer renderer(800, game);
-    renderer.run();
+    GameManager game(800, 10);
+    game.run();
 
     return 0;
 }

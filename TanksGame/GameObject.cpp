@@ -1,7 +1,7 @@
 #include "GameObject.h"
 
 GameObject::GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape)
-    : xPos(initialXPos), yPos(initialYPos), size(initialSize), maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel), angle(angle), shape(shape) {}
+    : xPos(initialXPos), yPos(initialYPos), size(initialSize), maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel) {}
 
 std::pair<int, int> GameObject::getPos() const {
     return std::make_pair(xPos, yPos);
@@ -23,4 +23,28 @@ int GameObject::getMaxAccel() const {
     return maxAccel;
 }
 
+int GameObject::getSize() const {
+    return size;
+}
+
+int GameObject::getChange() const {
+    return change;
+}
+
+double GameObject::getSpeed() const {
+    return sqrt(xVel * xVel + yVel * yVel);
+}
+
+bool GameObject::withStandTheShot(int damage) {
+    healthPoints -= damage;
+    if (healthPoints <= 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+void GameObject::scale(double scales) {
+    size *= scales;
+}
 

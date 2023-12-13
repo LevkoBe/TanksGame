@@ -4,16 +4,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include <cmath>
-
-enum ProjectileType {
-    CannonBall, // basic
-    FireBall,   // burns
-    SnowBall,   // slows down
-    Chip,       // turns into an ally
-    Magnet,     // attracts to itself
-    LazerBeam,  // basically basic
-    Reducer     // makes smaller
-};
+#include "Projectiles.h"
 
 class Tank : public GameObject {
 private:
@@ -37,24 +28,12 @@ public:
     int getPHealth() const;
     int getPDamage() const;
     int getPxSize() const;
-    int getAcceleration() const {
-        return sqrt(xAcc * xAcc + yAcc * yAcc);
-    }
+    int getAcceleration() const;
     ProjectileType getProjectile() const;
 
-    void accelerate(int extent) {
-        double angleRadians = rotationAngle * M_PI / 180.0;
-        
-        xAcc += extent * change * std::cos(angleRadians);
-        yAcc += extent * change * std::sin(angleRadians);
-    }
+    void accelerate(int extent);
 
-    void speedUp(int extent) {
-        double angleRadians = rotationAngle * M_PI / 180.0;
-
-        xVel += extent * change * std::cos(angleRadians);
-        yVel += extent * change * std::sin(angleRadians);
-    }
+    void speedUp(int extent);
 
     void rotate(double angle);
     void shoot() {}

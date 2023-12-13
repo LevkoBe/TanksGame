@@ -139,6 +139,7 @@
     <ClCompile Include="GameRun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="UserCommandHandler.cpp" />
@@ -150,6 +151,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameRun.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Projectiles.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="UserCommandHandler.h" />

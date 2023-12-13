@@ -15,18 +15,10 @@ class GameManager
 	sf::RenderWindow window;
 
 public:
-	GameManager(int windowSize) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game") {};
-	void run() {
-		initWindow();
-		while (window.isOpen()) {
-			auto commands = move(commander.processEvents(window));
-			game.update(move(commands));
-			renderer.render(window);
-		}
-	}
+	GameManager(int windowSize, int gridSize);
+	
+	void run();
 
-	void initWindow() {
-		// Initialize window properties
-	}
+	void initWindow();
 };
 
