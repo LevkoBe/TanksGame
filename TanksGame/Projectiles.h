@@ -8,5 +8,6 @@ enum ProjectileType {
     Magnet,     // attracts to itself
     LazerBeam,  // basically basic
     Reducer,    // makes smaller
-    BombaBall   // reflects from walls till collision with a tank
+    BombaBall,  // reflects from walls till collision with a tank
+    BlackHole,  // absorbs everything
 };
