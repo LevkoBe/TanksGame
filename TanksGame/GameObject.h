@@ -23,7 +23,7 @@ protected:
     int healthPoints = 100;
 
 public:
-    GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape);
+    GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, ObjectShape shape);
 
     std::pair<int, int> getPos() const;
 

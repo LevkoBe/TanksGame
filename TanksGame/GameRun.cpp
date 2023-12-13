@@ -19,7 +19,7 @@ void GameRun::createMap() {
             {
                 int xPos = wallSize * (i + 0.5);
                 int yPos = wallSize * (j + 0.5);
-                walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, 0, Square));
+                walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, Square));
             }
         }
     }

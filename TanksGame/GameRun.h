@@ -58,22 +58,26 @@ public:
             case MoveBackward:
                 setSpeed(-1);
                 break;
+            case Shoot:
+                userTank->shoot(projectiles);
+                break;
             default:
                 break;
             }
         }
     }
 
-    void update(std::vector<Command> commands) {
+    GameState update(std::vector<Command> commands) {
         processCommands(move(commands));
         moveUserTank();
         // todo: move projectiles
         // todo: move bots
+        return positions();
     }
 
     GameState positions() {
         GameState state;
-        state.userTankPosition = userTank->getPos();
+        state.userTank = userTank;
         state.walls = walls;
         state.bots = bots;
         state.projectiles = projectiles;

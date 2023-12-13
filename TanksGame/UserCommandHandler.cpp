@@ -53,4 +53,7 @@ void UserCommandHandler::handleKeyEvent(sf::Event& event) {
     else if (event.key.code == sf::Keyboard::Down) { // Move image backward / deccelerate
         commands.push_back(MoveBackward);
     }
+    else if (event.key.code == sf::Keyboard::Space) { // Move image backward / deccelerate
+        commands.push_back(Shoot);
+    }
 }

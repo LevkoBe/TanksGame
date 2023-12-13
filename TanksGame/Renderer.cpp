@@ -12,9 +12,18 @@ Renderer::Renderer(int windowSize) : windowSize(windowSize) {
     // sprite.setOrigin(20, 20);
 }
 
-void Renderer::render(sf::RenderWindow& window) {
+void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     window.clear();
     window.draw(text);
     window.draw(sprite); // Draw the tank
+
+    for (const auto& tank : *gamestate.bots) {
+        sprite.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
+        sprite.setRotation(static_cast<float>(tank.getAngle()));
+        // Set the scale based on the size of the tank
+        float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
+        sprite.setScale(scaleFactor, scaleFactor);
+        window.draw(sprite);
+    }
     window.display();
 }

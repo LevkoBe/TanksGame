@@ -1,6 +1,6 @@
 #include "GameObject.h"
 
-GameObject::GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, int angle, ObjectShape shape)
+GameObject::GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, ObjectShape shape)
     : xPos(initialXPos), yPos(initialYPos), size(initialSize), maxSpeed(initialMaxSpeed), maxAccel(initialMaxAccel) {}
 
 std::pair<int, int> GameObject::getPos() const {

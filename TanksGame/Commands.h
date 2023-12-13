@@ -6,5 +6,6 @@ enum Command {
     RotateClockWise,
     RotateCounterClockWise,
     MoveForward,
-    MoveBackward
+    MoveBackward,
+    Shoot
 };

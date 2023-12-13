@@ -4,7 +4,9 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include <cmath>
+#include <vector>
 #include "Projectiles.h"
+#include "Projectile.h"
 
 class Tank : public GameObject {
 private:
@@ -36,6 +38,14 @@ public:
     void speedUp(int extent);
 
     void rotate(double angle);
-    void shoot() {}
+
+    void shoot(std::shared_ptr<std::vector<Projectile>> projectiles) {
+        Projectile prj(projectile, pDamage, rotationAngle);
+    }
+
+    double getAngle() const {
+        return rotationAngle;
+    }
+    
     void setProjectileType(ProjectileType projectileType) {}
 };

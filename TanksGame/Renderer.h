@@ -1,5 +1,6 @@
 #pragma once
 #include "GameRun.h"
+#include "GameState.h"
 #include <SFML/Graphics.hpp>
 
 
@@ -25,5 +26,5 @@ private:
 public:
     Renderer(int windowSize);
 
-    void render(sf::RenderWindow& window);
+    void render(sf::RenderWindow& window, GameState gamestate);
 };
