@@ -21,9 +21,10 @@ protected:
     int maxSpeed = 100;
     int maxAccel = 10;
     int healthPoints = 100;
+    std::string image = "none";
 
 public:
-    GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, ObjectShape shape);
+    GameObject(int initialXPos, int initialYPos, int initialSize, int initialMaxSpeed, int initialMaxAccel, std::string image);
 
     std::pair<int, int> getPos() const;
 
@@ -42,6 +43,10 @@ public:
     int getMaxSpeed() const;
 
     int getMaxAccel() const;
+
+    std::string getImageName() const {
+        return image;
+    }
 
     void scale(double scales);
 };

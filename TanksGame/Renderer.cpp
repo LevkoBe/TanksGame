@@ -1,5 +1,6 @@
 // Renderer.cpp
 #include "Renderer.h"
+#include <random>
 
 Renderer::Renderer(int windowSize) : windowSize(windowSize) {
     font.loadFromFile("Arial.ttf");
@@ -25,26 +26,19 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
         sprite.setScale(scaleFactor, scaleFactor);
         window.draw(sprite);
     }
-
-    // Load wall texture
-    sf::Texture wallTexture;
-    if (!wallTexture.loadFromFile("./images/whall.png")) {
-        // Handle loading error
-        std::cerr << "Failed to load wall texture!" << std::endl;
-        return;
-    }
-
-    // Draw each wall with texture
     for (const auto& wall : *gamestate.walls) {
+        sf::Texture wallTexture;
+        wallTexture.loadFromFile(wall.getImageName());
         // Create a rectangle representing the wall
         sf::RectangleShape wallShape(sf::Vector2f(static_cast<float>(wall.getSize()), static_cast<float>(wall.getSize())));
         wallShape.setPosition(static_cast<float>(wall.getPos().first), static_cast<float>(wall.getPos().second));
 
-        // Apply the loaded texture to the wall shape
+        // Apply the randomly selected texture to the wall shape
         wallShape.setTexture(&wallTexture);
 
         window.draw(wallShape);
     }
 
     window.display();
+
 }

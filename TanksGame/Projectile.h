@@ -9,7 +9,7 @@ class Projectile: public GameObject
     double angle = -90;
 public:
     Projectile(ProjectileType type = CannonBall, int damage = 10, double angle = 0) :
-        GameObject(0, 0, 100, 100, 100, Circle), projectile(type), damage(damage), angle(angle-90) {};
+        GameObject(0, 0, 100, 100, 100, "none"), projectile(type), damage(damage), angle(angle - 90) {};
 
     bool destroyObject(GameObject& object) {
         return !object.withStandTheShot(damage);
