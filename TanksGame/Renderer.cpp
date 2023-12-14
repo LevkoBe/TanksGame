@@ -15,7 +15,6 @@ Renderer::Renderer(int windowSize) : windowSize(windowSize) {
 void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     window.clear();
     window.draw(text);
-    window.draw(sprite); // Draw the tank
 
     sf::Texture backgroundTexture;
     if (backgroundTexture.loadFromFile("./images/gravel1.png")) {
@@ -25,16 +24,6 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     }
     else {
         std::cerr << "Failed to load background texture!" << std::endl;
-    }
-
-    // Draw each tank
-    for (const auto& tank : *gamestate.bots) {
-        sprite.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
-        sprite.setRotation(static_cast<float>(tank.getAngle()));
-        // Set the scale based on the size of the tank
-        float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
-        sprite.setScale(scaleFactor, scaleFactor);
-        window.draw(sprite);
     }
     for (const auto& wall : *gamestate.walls) {
         sf::Texture wallTexture;
@@ -49,6 +38,17 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
         window.draw(wallShape);
     }
 
+    // Draw each tank
+    for (const auto& tank : *gamestate.bots) {
+        sprite.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
+        sprite.setRotation(static_cast<float>(tank.getAngle()));
+        // Set the scale based on the size of the tank
+        float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
+        sprite.setScale(scaleFactor, scaleFactor);
+        window.draw(sprite);
+    }
+
+    window.draw(sprite); // Draw the tank
     window.display();
 
 }
