@@ -1,4 +1,5 @@
 #include "GameRun.h"
+#include "FolderReader.h"
 #include <windows.h>
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty * 10)) {
@@ -9,29 +10,9 @@ GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windo
     }
 }
 
-std::vector<std::string> GetFilesInDirectory(const std::string& directory) {
-    std::vector<std::string> files;
-
-    WIN32_FIND_DATAA findFileData;
-    HANDLE hFind = FindFirstFileA((directory + "/*").c_str(), &findFileData);
-
-    if (hFind != INVALID_HANDLE_VALUE) {
-        do {
-            if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                continue; // Skip directories
-            }
-            files.push_back(directory + "/" + findFileData.cFileName);
-        } while (FindNextFileA(hFind, &findFileData) != 0);
-
-        FindClose(hFind);
-    }
-
-    return files;
-}
-
 void GameRun::createMap() {
     Map map(gridSize);
-    std::vector<std::string> wallTextures = GetFilesInDirectory("./images/walls");
+    std::vector<std::string> wallTextures = FolderReader::GetFilesInDirectory("./images/walls");
     int wallSize = windowSize / gridSize;
     for (int i = 0; i < gridSize; i++)
     {

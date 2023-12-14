@@ -17,6 +17,16 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     window.draw(text);
     window.draw(sprite); // Draw the tank
 
+    sf::Texture backgroundTexture;
+    if (backgroundTexture.loadFromFile("./images/gravel1.png")) {
+        sf::RectangleShape backgroundRect(static_cast<sf::Vector2f>(window.getSize()));
+        backgroundRect.setTexture(&backgroundTexture);
+        window.draw(backgroundRect);
+    }
+    else {
+        std::cerr << "Failed to load background texture!" << std::endl;
+    }
+
     // Draw each tank
     for (const auto& tank : *gamestate.bots) {
         sprite.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));

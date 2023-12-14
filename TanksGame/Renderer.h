@@ -1,5 +1,6 @@
 #pragma once
 #include "GameRun.h"
+#include "FolderReader.h"
 #include "GameState.h"
 #include <SFML/Graphics.hpp>
 
@@ -13,6 +14,7 @@ private:
     sf::Font font;
     sf::Text text;  // todo: text.setString(userInput);
     sf::Texture texture;
+    sf::Sprite backgroundSprite;
     sf::Sprite sprite; // sprite.setScale(sprite.getScale() * 0.9);
     std::vector<sf::Sprite> users; // expl: at first we pack here all sprites, then gradually delete each destroyed.
     std::vector<std::pair<int, int>> usersPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size

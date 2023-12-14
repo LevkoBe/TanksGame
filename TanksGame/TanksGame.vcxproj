@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BotTank.cpp" />
+    <ClCompile Include="FolderReader.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameMode.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="BotTank.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="FolderReader.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameMode.h" />
     <ClInclude Include="GameObject.h" />
