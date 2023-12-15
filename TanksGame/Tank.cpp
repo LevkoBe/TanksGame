@@ -11,6 +11,10 @@ Tank::Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int siz
 
 void Tank::rotate(double angle) {
     rotationAngle += angle;
+    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
+
+    xVel = speed * std::cos(angleRadians);
+    yVel = speed * std::sin(angleRadians);
 }
 
 void Tank::accelerate(int extent) {
@@ -21,10 +25,12 @@ void Tank::accelerate(int extent) {
 }
 
 void Tank::speedUp(int extent) {
-    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
+    speed += extent * change;
 
-    xVel += extent * change * std::cos(angleRadians);
-    yVel += extent * change * std::sin(angleRadians);
+    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
+    
+    xVel = speed * std::cos(angleRadians);
+    yVel = speed * std::sin(angleRadians);
 }
 
 int Tank::getAcceleration() const {
@@ -46,4 +52,10 @@ void Tank::setPosition(int x, int y) {
 void Tank::setVelocity(int x, int y) {
     xVel = x;
     yVel = y;
+}
+
+void Tank::stop() {
+    xVel = 0;
+    yVel = 0;
+    speed = 0;
 }

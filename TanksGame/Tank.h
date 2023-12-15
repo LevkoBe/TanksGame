@@ -15,6 +15,7 @@ private:
     int vReload = 0; // may increase
     int pHealth = 100;
     int pDamage = 10;
+    int speed = 0;
     double rotationAngle = 90.0;
     ProjectileType projectile;
 
@@ -44,6 +45,8 @@ public:
     void shoot(std::shared_ptr<std::vector<Projectile>> projectiles) {
         Projectile prj(projectile, pDamage, rotationAngle);
     }
+
+    void stop();
 
     double getAngle() const {
         return rotationAngle;

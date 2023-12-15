@@ -98,6 +98,7 @@ void GameRun::setSpeed(int extent) {
     case LeftUpRightDown:
         break;
     case RotatePosition:
+        userTank->speedUp(extent);
         break;
     case RotateVelocity:
         userTank->speedUp(extent);
@@ -124,6 +125,8 @@ void GameRun::moveUserTank() { // todo: nullify when collision
     if (collisionsWithProjectiles(xExpected, yExpected)) { return; }
     
     userTank->setPosition(xExpected, yExpected);
+
+    if (mode == RotatePosition) { userTank->stop(); }
     // check max speed
 }
 
@@ -160,9 +163,9 @@ bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int 
 }
 
 bool GameRun::squareCircleColliding(double squareX, double squareY, double squareSize, double circleX, double circleY, double circleRadius) {
-
-    double closestX = std::max(squareX, std::min(circleX, squareX + squareSize));
-    double closestY = std::max(squareY, std::min(circleY, squareY + squareSize));
+    double sensitivity = 0.8;
+    double closestX = std::max(squareX, std::min(circleX, squareX + squareSize * sensitivity));
+    double closestY = std::max(squareY, std::min(circleY, squareY + squareSize * sensitivity));
 
     double distance = std::sqrt(std::pow(closestX - circleX, 2) + std::pow(closestY - circleY, 2));
     return distance < circleRadius;

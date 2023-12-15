@@ -50,8 +50,8 @@ public:
     bool collisionsWithWalls(int xExpected, int yExpected) {
 
         for (auto& wall : *walls) {
-            if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 2)) {
-                userTank->setVelocity(0, 0);
+            if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
+                userTank->stop();
                 return true;
             }
         }
@@ -62,7 +62,7 @@ public:
         for (auto& bot : *bots) {
             if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
             {
-                userTank->setVelocity(0, 0);
+                userTank->stop();
                 return true;
             }
         }
