@@ -14,7 +14,7 @@ private:
     sf::Font font;
     sf::Text text;  // todo: text.setString(userInput);
     sf::Sprite backgroundSprite;
-    sf::Sprite sprite; // sprite.setScale(sprite.getScale() * 0.9);
+    sf::Sprite sprite;
     std::vector<sf::Sprite> users; // expl: at first we pack here all sprites, then gradually delete each destroyed.
     std::vector<std::pair<int, int>> usersPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size
     std::vector<sf::Sprite> bots;

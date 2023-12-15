@@ -159,7 +159,7 @@ bool GameRun::addBot(int position) {
 bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {
 
     int distance = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
-    return distance < (radius1 + radius2);
+    return distance < (radius1 / 4 + radius2 / 4);
 }
 
 bool GameRun::squareCircleColliding(double squareX, double squareY, double squareSize, double circleX, double circleY, double circleRadius) {
@@ -168,7 +168,7 @@ bool GameRun::squareCircleColliding(double squareX, double squareY, double squar
     double closestY = std::max(squareY, std::min(circleY, squareY + squareSize * sensitivity));
 
     double distance = std::sqrt(std::pow(closestX - circleX, 2) + std::pow(closestY - circleY, 2));
-    return distance < circleRadius;
+    return distance < circleRadius / 4;
 }
 
 bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, int circleX, int circleY, int circleRadius) {
@@ -186,10 +186,15 @@ bool GameRun::insideGameField(int x, int y) const {
 }
 
 bool GameRun::insideGameField(int x, int y, int size, int error) const {
-    return insideGameField(x - size / error, y - size / error) &&
+    if (insideGameField(x - size / error, y - size / error) &&
         insideGameField(x - size / error, y + size / error) &&
         insideGameField(x + size / error, y - size / error) &&
-        insideGameField(x + size / error, y + size / error);
+        insideGameField(x + size / error, y + size / error))
+    {
+        return true;
+    }
+    userTank->stop();
+    return false;
 }
 
 void GameRun::changeSize(double increase) {

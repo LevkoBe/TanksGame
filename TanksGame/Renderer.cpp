@@ -14,7 +14,7 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     window.draw(text);
 
     sf::Texture backgroundTexture;
-    if (backgroundTexture.loadFromFile("./images/gravel1.png")) {
+    if (backgroundTexture.loadFromFile("./images/grass2.jpg")) { // "./images/gravel1.png" // "./images/grass.png"
         sf::RectangleShape backgroundRect(static_cast<sf::Vector2f>(window.getSize()));
         backgroundRect.setTexture(&backgroundTexture);
         window.draw(backgroundRect);
