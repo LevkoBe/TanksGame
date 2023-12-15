@@ -2,6 +2,7 @@
 
 std::vector<Command> UserCommandHandler::processEvents(sf::RenderWindow& window) { // (: I wanted to give a window, instead of a reference
     sf::Event event;
+    commands = std::vector<Command>();
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();

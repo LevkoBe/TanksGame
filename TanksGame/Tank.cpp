@@ -14,14 +14,14 @@ void Tank::rotate(double angle) {
 }
 
 void Tank::accelerate(int extent) {
-    double angleRadians = rotationAngle * M_PI / 180.0;
+    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
 
     xAcc += extent * change * std::cos(angleRadians);
     yAcc += extent * change * std::sin(angleRadians);
 }
 
 void Tank::speedUp(int extent) {
-    double angleRadians = rotationAngle * M_PI / 180.0;
+    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
 
     xVel += extent * change * std::cos(angleRadians);
     yVel += extent * change * std::sin(angleRadians);
@@ -37,3 +37,13 @@ int Tank::getVReload() const { return vReload; }
 int Tank::getPHealth() const { return pHealth; }
 int Tank::getPDamage() const { return pDamage; }
 ProjectileType Tank::getProjectile() const { return projectile; }
+
+void Tank::setPosition(int x, int y) {
+    xPos = x;
+    yPos = y;
+}
+
+void Tank::setVelocity(int x, int y) {
+    xVel = x;
+    yVel = y;
+}

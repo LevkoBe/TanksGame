@@ -55,10 +55,10 @@ void GameRun::processCommands(std::vector<Command> commands) {
             changeSize(0.9);
             break;
         case RotateClockWise:
-            userTank->rotate(0.1);
+            userTank->rotate(10.0);
             break;
         case RotateCounterClockWise:
-            userTank->rotate(-0.1);
+            userTank->rotate(-10.0);
             break;
         case MoveForward:
             setSpeed(1);
@@ -100,9 +100,11 @@ void GameRun::setSpeed(int extent) {
     case RotatePosition:
         break;
     case RotateVelocity:
+        userTank->speedUp(extent);
         break;
     case RotateAcceleration:
         userTank->accelerate(extent);
+        break;
     default:
         break;
     }
@@ -112,44 +114,17 @@ void GameRun::moveUserTank() { // todo: nullify when collision
     userTank->speedUp(userTank->getAcceleration()); // todo: check coefficients system
     int xExpected = userTank->getPos().first + userTank->getVel().first;
     int yExpected = userTank->getPos().second + userTank->getVel().second;
-    bool stopTheTank = false;
 
-    if (!insideGameField(xExpected, yExpected)) { return; }
+    if (!insideGameField(xExpected, yExpected, userTank->getSize())) { return; }
 
-    for (auto& wall : *walls)
-    { // collisions with walls
-        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize() * 0.5), xExpected, yExpected, userTank->getSize() / 2))
-        {
-            stopTheTank = true;
-            break;
-        }
-    }
+    if (collisionsWithWalls(xExpected, yExpected)) { return; }
 
-    for (auto& bot : *bots)
-    { // collisions with bots
-        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
-        {
-            stopTheTank = true;
-            break;
-        }
-    }
-
-    for (auto& projectile : *projectiles)
-    { // collisions with projectiles
-        if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
-        {
-            if (projectile.destroyObject(*userTank)) {
-                std::cout << "Game over!" << std::endl;
-            }
-        }
-    }
-
-    if (stopTheTank)
-    {
-        userTank->speedUp(-userTank->getSpeed() / userTank->getChange());
-    }
-
-    // max speed
+    if (collisionsWithBots(xExpected, yExpected)) { return; }
+    
+    if (collisionsWithProjectiles(xExpected, yExpected)) { return; }
+    
+    userTank->setPosition(xExpected, yExpected);
+    // check max speed
 }
 
 bool GameRun::addBot(int position) {
@@ -186,8 +161,8 @@ bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int 
 
 bool GameRun::squareCircleColliding(double squareX, double squareY, double squareSize, double circleX, double circleY, double circleRadius) {
 
-    double closestX = std::max(squareX - squareSize / 2.0, std::min(circleX, squareX + squareSize / 2.0));
-    double closestY = std::max(squareY - squareSize / 2.0, std::min(circleY, squareY + squareSize / 2.0));
+    double closestX = std::max(squareX, std::min(circleX, squareX + squareSize));
+    double closestY = std::max(squareY, std::min(circleY, squareY + squareSize));
 
     double distance = std::sqrt(std::pow(closestX - circleX, 2) + std::pow(closestY - circleY, 2));
     return distance < circleRadius;
@@ -205,6 +180,13 @@ bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, in
 
 bool GameRun::insideGameField(int x, int y) const {
     return x > 0 && y > 0 && x < windowSize && y < windowSize;
+}
+
+bool GameRun::insideGameField(int x, int y, int size, int error) const {
+    return insideGameField(x - size / error, y - size / error) &&
+        insideGameField(x - size / error, y + size / error) &&
+        insideGameField(x + size / error, y - size / error) &&
+        insideGameField(x + size / error, y + size / error);
 }
 
 void GameRun::changeSize(double increase) {

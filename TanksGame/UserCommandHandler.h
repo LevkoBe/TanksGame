@@ -6,7 +6,7 @@
 class UserCommandHandler
 {
     std::string userInput = "";
-    std::vector<Command> commands = std::vector<Command>();
+    std::vector<Command> commands;
 
     void handleTextEvent(sf::Event& event);
 

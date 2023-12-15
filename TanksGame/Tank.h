@@ -31,10 +31,9 @@ public:
     int getAcceleration() const;
     ProjectileType getProjectile() const;
 
-    void setPosition(int x, int y) {
-        xPos = x;
-        yPos = y;
-    }
+    void setPosition(int x, int y);
+
+    void setVelocity(int x, int y);
 
     void accelerate(int extent);
 
