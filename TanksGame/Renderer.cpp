@@ -7,9 +7,6 @@ Renderer::Renderer(int windowSize) : windowSize(windowSize) {
     text.setFont(font);
     text.setCharacterSize(30);
     text.setFillColor(sf::Color::White);
-    texture.loadFromFile("./images/tank1.png");
-    sprite = sf::Sprite(texture);
-    sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
 }
 
 void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
@@ -40,15 +37,35 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
 
     // Draw each tank
     for (const auto& tank : *gamestate.bots) {
-        sprite.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
-        sprite.setRotation(static_cast<float>(tank.getAngle()));
-        // Set the scale based on the size of the tank
-        float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
-        sprite.setScale(scaleFactor, scaleFactor);
-        window.draw(sprite);
+        sf::Texture botTexture;
+
+        if (botTexture.loadFromFile(tank.getImageName())) {
+            sf::Sprite bot(botTexture);
+            bot.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
+            bot.setRotation(static_cast<float>(tank.getAngle()));
+
+            float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
+            bot.setScale(scaleFactor, scaleFactor);
+            
+            window.draw(bot);
+        }
+        else {
+            std::cerr << "Failed to load bot texture: " << tank.getImageName() << std::endl;
+        }
     }
 
+    sf::Texture texture;
+    texture.loadFromFile(gamestate.userTank->getImageName());
+    sprite = sf::Sprite(texture);
+    sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
+    float tankSize = static_cast<float>(gamestate.userTank->getSize());
+    float scaleFactor = tankSize / sprite.getLocalBounds().width;
+    sprite.setPosition(static_cast<float>(gamestate.userTank->getPos().first), static_cast<float>(gamestate.userTank->getPos().second));
+    sprite.setScale(scaleFactor, scaleFactor);
+    sprite.setRotation(static_cast<float>(gamestate.userTank->getAngle()));
+
     window.draw(sprite); // Draw the tank
+
     window.display();
 
 }

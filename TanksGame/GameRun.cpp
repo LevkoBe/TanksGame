@@ -1,13 +1,19 @@
 #define NOMINMAX
 #include "GameRun.h"
+#include "BotTank.h"
 #include "FolderReader.h"
 #include <windows.h>
 
-GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty * 10)) {
+GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty, windowSize / gridSize)) {
     createMap();
+    userTank->setPosition(userTank->getSize() / 2, userTank->getSize() / 2);
     for (int i = 0; i < difficulty; i++)
     {
-        bots->push_back(Tank(difficulty * 10));
+        allBots->push_back(BotTank(i + 1, windowSize / gridSize));
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        addBot(i);
     }
 }
 
@@ -31,6 +37,7 @@ void GameRun::createMap() {
                 std::string image = wallTextures[randomIndex];
 
                 walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, image));
+                (*wallsMap)[i][j] = true;
             }
         }
     }
@@ -111,23 +118,25 @@ void GameRun::moveUserTank() { // todo: nullify when collision
 
     for (auto& wall : *walls)
     { // collisions with walls
-        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), xExpected, yExpected, userTank->getSize() / 2))
+        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize() * 0.5), xExpected, yExpected, userTank->getSize() / 2))
         {
             stopTheTank = true;
+            break;
         }
     }
 
     for (auto& bot : *bots)
     { // collisions with bots
-        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize(), xExpected, yExpected, userTank->getSize() / 2))
+        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
         {
             stopTheTank = true;
+            break;
         }
     }
 
     for (auto& projectile : *projectiles)
     { // collisions with projectiles
-        if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize(), xExpected, yExpected, userTank->getSize() / 2))
+        if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
         {
             if (projectile.destroyObject(*userTank)) {
                 std::cout << "Game over!" << std::endl;
@@ -141,6 +150,32 @@ void GameRun::moveUserTank() { // todo: nullify when collision
     }
 
     // max speed
+}
+
+bool GameRun::addBot(int position) {
+    if (allBots->size() <= 0) { return false; }
+
+    auto theTank = allBots->back();
+    allBots->pop_back();
+    int xPos = 0, yPos = 0;
+    double cellSize = windowSize / gridSize;
+
+    switch (position) {
+    case 0:
+        xPos = cellSize * (gridSize - 1);
+        yPos = 0;
+        break;
+    case 1:
+        xPos = yPos = cellSize * (gridSize - 1);
+        break;
+    case 2:
+        xPos = 0;
+        yPos = cellSize * (gridSize - 1);
+        break;
+    }
+    theTank.setPosition(xPos + cellSize, yPos);
+    bots->push_back(theTank);
+    return true;
 }
 
 bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {

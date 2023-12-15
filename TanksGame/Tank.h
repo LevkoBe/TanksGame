@@ -15,12 +15,11 @@ private:
     int vReload = 0; // may increase
     int pHealth = 100;
     int pDamage = 10;
-    int pxSize = 40;
     double rotationAngle = 90.0;
     ProjectileType projectile;
 
 public:
-    Tank(int coefficient = 100);
+    Tank(int coefficient = 100, int size = 100, std::string image = "./images/tank1.png");
 
     Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int size, ProjectileType projectile = CannonBall);
 
@@ -29,9 +28,13 @@ public:
     int getVReload() const;
     int getPHealth() const;
     int getPDamage() const;
-    int getPxSize() const;
     int getAcceleration() const;
     ProjectileType getProjectile() const;
+
+    void setPosition(int x, int y) {
+        xPos = x;
+        yPos = y;
+    }
 
     void accelerate(int extent);
 

@@ -13,7 +13,6 @@ private:
     const int windowSize = 800;
     sf::Font font;
     sf::Text text;  // todo: text.setString(userInput);
-    sf::Texture texture;
     sf::Sprite backgroundSprite;
     sf::Sprite sprite; // sprite.setScale(sprite.getScale() * 0.9);
     std::vector<sf::Sprite> users; // expl: at first we pack here all sprites, then gradually delete each destroyed.

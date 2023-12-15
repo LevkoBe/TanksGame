@@ -25,8 +25,10 @@ private:
     ControlMode mode = RotateAcceleration;
     std::shared_ptr<Tank> userTank;
     std::shared_ptr<std::vector<Tank>> bots = std::make_shared<std::vector<Tank>>();
+    std::shared_ptr<std::vector<Tank>> allBots = std::make_shared<std::vector<Tank>>();
     std::shared_ptr<std::vector<GameObject>> walls = std::make_shared<std::vector<GameObject>>();
     std::shared_ptr<std::vector<Projectile>> projectiles = std::make_shared<std::vector<Projectile>>();
+    std::shared_ptr<std::vector<std::vector<bool>>> wallsMap = std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
 
 public:
     GameRun(int windowSize, int gridSize, int difficulty);
@@ -44,6 +46,8 @@ public:
     void setSpeed(int extent);
 
     void moveUserTank();
+
+    bool addBot(int position);
 
     bool circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2);
 
