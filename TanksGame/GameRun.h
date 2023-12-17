@@ -60,7 +60,7 @@ public:
 
     bool collisionsWithBots(int xExpected, int yExpected) {
         for (auto& bot : *bots) {
-            if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
+            if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
             {
                 userTank->stop();
                 return true;
@@ -71,7 +71,7 @@ public:
 
     bool collisionsWithProjectiles(int xExpected, int yExpected) {
         for (auto& projectile : *projectiles) {
-            if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() * 0.5, xExpected, yExpected, userTank->getSize() / 2))
+            if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
             {
                 if (projectile.destroyObject(*userTank)) {
                     std::cout << "Game over!" << std::endl;

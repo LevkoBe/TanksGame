@@ -41,10 +41,11 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
 
         if (botTexture.loadFromFile(tank.getImageName())) {
             sf::Sprite bot(botTexture);
+            bot.setOrigin(bot.getLocalBounds().width / 2, bot.getLocalBounds().height / 2);
             bot.setPosition(static_cast<float>(tank.getPos().first), static_cast<float>(tank.getPos().second));
             bot.setRotation(static_cast<float>(tank.getAngle()));
 
-            float scaleFactor = static_cast<float>(tank.getSize()) / sprite.getLocalBounds().width;
+            float scaleFactor = static_cast<float>(tank.getSize()) / bot.getLocalBounds().width;
             bot.setScale(scaleFactor, scaleFactor);
             
             window.draw(bot);
@@ -58,13 +59,12 @@ void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
     texture.loadFromFile(gamestate.userTank->getImageName());
     sprite = sf::Sprite(texture);
     sprite.setOrigin(sprite.getLocalBounds().width / 2, sprite.getLocalBounds().height / 2);
-    float tankSize = static_cast<float>(gamestate.userTank->getSize());
-    float scaleFactor = tankSize / sprite.getLocalBounds().width;
     sprite.setPosition(static_cast<float>(gamestate.userTank->getPos().first), static_cast<float>(gamestate.userTank->getPos().second));
+    float scaleFactor = static_cast<float>(gamestate.userTank->getSize()) / sprite.getLocalBounds().width;
     sprite.setScale(scaleFactor, scaleFactor);
     sprite.setRotation(static_cast<float>(gamestate.userTank->getAngle()));
 
-    window.draw(sprite); // Draw the tank
+    window.draw(sprite);
 
     window.display();
 

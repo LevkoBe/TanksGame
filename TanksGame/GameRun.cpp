@@ -6,7 +6,6 @@
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty, windowSize / gridSize)) {
     createMap();
-    userTank->setPosition(userTank->getSize() / 2, userTank->getSize() / 2);
     for (int i = 0; i < difficulty; i++)
     {
         allBots->push_back(BotTank(i + 1, windowSize / gridSize));
@@ -135,48 +134,45 @@ bool GameRun::addBot(int position) {
 
     auto theTank = allBots->back();
     allBots->pop_back();
-    int xPos = 0, yPos = 0;
     double cellSize = windowSize / gridSize;
+    int xPos = cellSize / 2, yPos = cellSize / 2;
 
     switch (position) {
     case 0:
-        xPos = cellSize * (gridSize - 1);
-        yPos = 0;
+        xPos = cellSize * (gridSize - 0.5);
         break;
     case 1:
-        xPos = yPos = cellSize * (gridSize - 1);
+        xPos = yPos = cellSize * (gridSize - 0.5);
         break;
     case 2:
-        xPos = 0;
-        yPos = cellSize * (gridSize - 1);
+        yPos = cellSize * (gridSize - 0.5);
         break;
     }
-    theTank.setPosition(xPos + cellSize, yPos);
+    theTank.setPosition(xPos, yPos);
     bots->push_back(theTank);
     return true;
 }
 
+bool GameRun::squareCircleColliding(double squareTopLeftX, double squareTopLeftY, double squareSize, double circleCenterX, double circleCenterY, double circleRadius) {
+    double closestX = std::max(squareTopLeftX, std::min(circleCenterX, squareTopLeftX + squareSize));
+    double closestY = std::max(squareTopLeftY, std::min(circleCenterY, squareTopLeftY + squareSize));
+
+    double distance = std::sqrt(std::pow(closestX - circleCenterX, 2) + std::pow(closestY - circleCenterY, 2));
+    return distance < circleRadius;
+}
+
 bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {
-
     int distance = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
-    return distance < (radius1 / 4 + radius2 / 4);
+    return distance < (radius1 + radius2);
 }
 
-bool GameRun::squareCircleColliding(double squareX, double squareY, double squareSize, double circleX, double circleY, double circleRadius) {
-    double sensitivity = 0.8;
-    double closestX = std::max(squareX, std::min(circleX, squareX + squareSize * sensitivity));
-    double closestY = std::max(squareY, std::min(circleY, squareY + squareSize * sensitivity));
 
-    double distance = std::sqrt(std::pow(closestX - circleX, 2) + std::pow(closestY - circleY, 2));
-    return distance < circleRadius / 4;
-}
-
-bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, int circleX, int circleY, int circleRadius) {
+bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, int circleCenterX, int circleCenterY, int circleRadius) {
     double sqX = static_cast<double>(squareX);
     double sqY = static_cast<double>(squareY);
     double sqS = static_cast<double>(squareSize);
-    double crX = static_cast<double>(circleX);
-    double crY = static_cast<double>(circleY);
+    double crX = static_cast<double>(circleCenterX);
+    double crY = static_cast<double>(circleCenterY);
     double crR = static_cast<double>(circleRadius);
     return squareCircleColliding(sqX, sqY, sqS, crX, crY, crR);
 }

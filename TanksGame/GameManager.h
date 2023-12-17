@@ -11,7 +11,7 @@ class GameManager
 	GameRun game;
 	Renderer renderer;
 	Tank sampleTank;
-	int windowSize = 800;
+	int windowSize;
 	sf::RenderWindow window;
 
 public:

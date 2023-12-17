@@ -16,7 +16,7 @@ public:
 	}
 
 	std::string getImageName(int level) {
-		return "./images/tank" + std::to_string(level) + ".png";
+		return "./images/prototank00" + std::to_string(level + 1) + ".png";
 	}
 
 	void shoot() {

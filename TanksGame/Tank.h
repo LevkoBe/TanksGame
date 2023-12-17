@@ -20,7 +20,7 @@ private:
     ProjectileType projectile;
 
 public:
-    Tank(int coefficient = 100, int size = 100, std::string image = "./images/tank1.png");
+    Tank(int coefficient = 100, int size = 100, std::string image = "./images/prototank001.png");
 
     Tank(int vMove, int vShoot, int vReload, int pHealth, int pDamage, int size, ProjectileType projectile = CannonBall);
 
