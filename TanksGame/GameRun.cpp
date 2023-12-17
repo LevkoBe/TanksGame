@@ -115,7 +115,7 @@ void GameRun::moveUserTank() { // todo: nullify when collision
     int xExpected = userTank->getPos().first + userTank->getVel().first;
     int yExpected = userTank->getPos().second + userTank->getVel().second;
 
-    if (!insideGameField(xExpected, yExpected, userTank->getSize())) { return; }
+    if (!insideGameField(xExpected, yExpected, userTank->getSize() / 4)) { return; }
 
     if (collisionsWithWalls(xExpected, yExpected)) { return; }
 
@@ -127,6 +127,53 @@ void GameRun::moveUserTank() { // todo: nullify when collision
 
     if (mode == RotatePosition) { userTank->stop(); }
     // check max speed
+}
+
+bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
+
+    for (auto& wall : *walls) {
+        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
+            userTank->stop();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
+    for (auto& bot : *bots) {
+        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
+        {
+            userTank->stop();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GameRun::collisionsWithProjectiles(int xExpected, int yExpected) {
+    for (auto& projectile : *projectiles) {
+        if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
+        {
+            if (projectile.destroyObject(*userTank)) {
+                std::cout << "Game over!" << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool GameRun::insideGameField(int x, int y, int radius) const {
+    if (insideGameField(x - radius, y - radius) &&
+        insideGameField(x - radius, y + radius) &&
+        insideGameField(x + radius, y - radius) &&
+        insideGameField(x + radius, y + radius))
+    {
+        return true;
+    }
+    userTank->stop();
+    return false;
 }
 
 bool GameRun::addBot(int position) {
@@ -153,6 +200,11 @@ bool GameRun::addBot(int position) {
     return true;
 }
 
+bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {
+    int distance = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
+    return distance < (radius1 + radius2);
+}
+
 bool GameRun::squareCircleColliding(double squareTopLeftX, double squareTopLeftY, double squareSize, double circleCenterX, double circleCenterY, double circleRadius) {
     double closestX = std::max(squareTopLeftX, std::min(circleCenterX, squareTopLeftX + squareSize));
     double closestY = std::max(squareTopLeftY, std::min(circleCenterY, squareTopLeftY + squareSize));
@@ -160,12 +212,6 @@ bool GameRun::squareCircleColliding(double squareTopLeftX, double squareTopLeftY
     double distance = std::sqrt(std::pow(closestX - circleCenterX, 2) + std::pow(closestY - circleCenterY, 2));
     return distance < circleRadius;
 }
-
-bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {
-    int distance = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
-    return distance < (radius1 + radius2);
-}
-
 
 bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, int circleCenterX, int circleCenterY, int circleRadius) {
     double sqX = static_cast<double>(squareX);
@@ -179,18 +225,6 @@ bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, in
 
 bool GameRun::insideGameField(int x, int y) const {
     return x > 0 && y > 0 && x < windowSize && y < windowSize;
-}
-
-bool GameRun::insideGameField(int x, int y, int size, int error) const {
-    if (insideGameField(x - size / error, y - size / error) &&
-        insideGameField(x - size / error, y + size / error) &&
-        insideGameField(x + size / error, y - size / error) &&
-        insideGameField(x + size / error, y + size / error))
-    {
-        return true;
-    }
-    userTank->stop();
-    return false;
 }
 
 void GameRun::changeSize(double increase) {

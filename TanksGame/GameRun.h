@@ -47,42 +47,13 @@ public:
 
     void moveUserTank();
 
-    bool collisionsWithWalls(int xExpected, int yExpected) {
+    bool collisionsWithWalls(int xExpected, int yExpected);
 
-        for (auto& wall : *walls) {
-            if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
-                userTank->stop();
-                return true;
-            }
-        }
-        return false;
-    }
+    bool collisionsWithBots(int xExpected, int yExpected);
 
-    bool collisionsWithBots(int xExpected, int yExpected) {
-        for (auto& bot : *bots) {
-            if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
-            {
-                userTank->stop();
-                return true;
-            }
-        }
-        return false;
-    }
+    bool collisionsWithProjectiles(int xExpected, int yExpected);
 
-    bool collisionsWithProjectiles(int xExpected, int yExpected) {
-        for (auto& projectile : *projectiles) {
-            if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
-            {
-                if (projectile.destroyObject(*userTank)) {
-                    std::cout << "Game over!" << std::endl;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    bool insideGameField(int x, int y, int size, int error = 4) const;
+    bool insideGameField(int x, int y, int size) const;
     
     bool addBot(int position);
 
