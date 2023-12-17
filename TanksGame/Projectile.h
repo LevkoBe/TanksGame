@@ -33,17 +33,17 @@ class Projectile : public GameObject
 
     int calculateX(int tankX, int tankSize, double angle, ProjectileType type) {
         int sizes = (tankSize / 2 + calculateSize(tankSize, type) / 2);
-        int x = static_cast<int>(cos(angle * M_PI / 180) * sizes);
+        int x = static_cast<int>(cos((angle - 90) * M_PI / 180) * sizes);
         return tankX + x;
     }
 
     int calculateY(int tankY, int tankSize, double angle, ProjectileType type) {
-        return tankY + static_cast<int>(sin(angle * M_PI / 180) * (tankSize / 2 + calculateSize(tankSize, type) / 2));
+        return tankY + static_cast<int>(sin((angle - 90) * M_PI / 180) * (tankSize / 2 + calculateSize(tankSize, type) / 2));
     }
 
 public:
     Projectile(int damage, int tankX, int tankY, int tankSize, ProjectileType type, double angle) : projectile(type), angle(angle), damage(damage),
-        GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), speed, angle, "./images/cannonBall.png") {};
+        GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), 10, angle, "./images/cannonBall.png") {};
 
     bool destroyObject(GameObject& object) {
         return !object.withstandTheShot(damage);

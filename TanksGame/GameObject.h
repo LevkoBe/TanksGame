@@ -28,6 +28,13 @@ protected:
 
 public:
     GameObject(int initialXPos, int initialYPos, int initialSize, int speed, double angle = 0, std::string image = "none");
+    
+    bool operator==(const GameObject& other) const {
+        // Compare all relevant attributes for equality
+        return std::tie(xPos, yPos, xVel, yVel, speed, xAcc, yAcc, change, size, healthPoints, rotationAngle, image) ==
+            std::tie(other.xPos, other.yPos, other.xVel, other.yVel, other.speed, other.xAcc, other.yAcc, other.change,
+                other.size, other.healthPoints, other.rotationAngle, other.image);
+    }
 
     std::pair<int, int> getPos() const;
 
