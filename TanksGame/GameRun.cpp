@@ -4,7 +4,7 @@
 #include "FolderReader.h"
 #include <windows.h>
 
-GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty, windowSize / gridSize)) {
+GameRun::GameRun(int windowSize, int gridSize, int difficulty): windowSize(windowSize), gridSize(gridSize), userTank(new Tank(difficulty * 10, windowSize / gridSize)) {
     createMap();
     for (int i = 0; i < difficulty; i++)
     {
@@ -77,7 +77,9 @@ void GameRun::processCommands(std::vector<Command> commands) {
 GameState GameRun::update(std::vector<Command> commands) {
     processCommands(move(commands));
     moveUserTank();
-    // todo: move projectiles
+    for (auto& projectile : (*projectiles)) {
+        moveProjectile(projectile);
+    }
     // todo: move bots
     return positions();
 }
@@ -110,7 +112,7 @@ void GameRun::setSpeed(int extent) {
     }
 }
 
-void GameRun::moveUserTank() { // todo: nullify when collision
+void GameRun::moveUserTank() {
     userTank->speedUp(userTank->getAcceleration()); // todo: check coefficients system
     int xExpected = userTank->getPos().first + userTank->getVel().first;
     int yExpected = userTank->getPos().second + userTank->getVel().second;
@@ -129,6 +131,21 @@ void GameRun::moveUserTank() { // todo: nullify when collision
     // check max speed
 }
 
+void GameRun::moveProjectile(Projectile& projectile) {
+    int x = projectile.getPos().first + projectile.getVel().first;
+    int y = projectile.getPos().second + projectile.getVel().second;
+    projectile.setPosition(x, y);
+
+    if (!insideGameField(x, y, projectile.getSize() / 4)) {
+        projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
+        return;
+    }
+
+    if (hitsWalls(x, y, projectile)) { return; } // todo: R-tree
+
+    if (hitsBots(x, y, projectile)) { return; }
+}
+
 bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
 
     for (auto& wall : *walls) {
@@ -145,6 +162,36 @@ bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
         if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
         {
             userTank->stop();
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
+
+    for (auto& wall : *walls) {
+        if (circlesColliding(wall.getPos().first, wall.getPos().second, wall.getSize() / 4, x, y, projectile.getSize() / 4))
+        {
+            if (projectile.destroyObject(wall)) {
+                walls->erase(std::find(walls->begin(), walls->end(), wall));
+            }
+            projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
+            return true;
+        }
+    }
+    return false;
+}
+
+bool GameRun::hitsBots(int x, int y, Projectile projectile) {
+
+    for (auto& bot : *bots) {
+        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, x, y, projectile.getSize() / 4))
+        {
+            if (projectile.destroyObject(bot)) {
+                bots->erase(std::find(bots->begin(), bots->end(), bot));
+            }
+            projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
             return true;
         }
     }

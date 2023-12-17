@@ -47,9 +47,15 @@ public:
 
     void moveUserTank();
 
+    void moveProjectile(Projectile& projectile);
+
     bool collisionsWithWalls(int xExpected, int yExpected);
 
     bool collisionsWithBots(int xExpected, int yExpected);
+
+    bool hitsWalls(int x, int y, Projectile projectile);
+
+    bool hitsBots(int x, int y, Projectile projectile);
 
     bool collisionsWithProjectiles(int xExpected, int yExpected);
 

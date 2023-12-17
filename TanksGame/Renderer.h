@@ -4,8 +4,6 @@
 #include "GameState.h"
 #include <SFML/Graphics.hpp>
 
-
-
 class Renderer {
 private:
     const double rotationSpeed = 5.0;
@@ -15,17 +13,28 @@ private:
     sf::Text text;  // todo: text.setString(userInput);
     sf::Sprite backgroundSprite;
     sf::Sprite sprite;
-    std::vector<sf::Sprite> users; // expl: at first we pack here all sprites, then gradually delete each destroyed.
-    std::vector<std::pair<int, int>> usersPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size
+    std::vector<sf::Sprite> users;
+    std::vector<std::pair<int, int>> usersPositions;
     std::vector<sf::Sprite> bots;
-    std::vector<std::pair<int, int>> botsPositions = std::vector<std::pair<int, int>>(); // todo: tuple -> angles, size
+    std::vector<std::pair<int, int>> botsPositions;
     std::vector<sf::Sprite> walls;
-    std::vector<std::pair<int, int>> wallsPositions = std::vector<std::pair<int, int>>(); // extra: cracks
+    std::vector<std::pair<int, int>> wallsPositions;
     std::vector<sf::Sprite> projectiles;
-    std::vector<std::pair<int, int>> projectilesPositions = std::vector<std::pair<int, int>>(); // todo: tuple, size -> angles
-    // todo: move positions from here to methods
+    std::vector<std::pair<int, int>> projectilesPositions;
+
 public:
     Renderer(int windowSize);
 
     void render(sf::RenderWindow& window, GameState gamestate);
+
+private:
+    void drawBackground(sf::RenderWindow& window);
+
+    void renderWalls(sf::RenderWindow& window, const std::shared_ptr<std::vector<GameObject>>& walls);
+
+    void renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<Tank>>& bots);
+
+    void renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Tank>& userTank);
+
+    void renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles);
 };
