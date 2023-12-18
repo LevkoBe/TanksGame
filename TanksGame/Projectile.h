@@ -43,7 +43,7 @@ class Projectile : public GameObject
 
 public:
     Projectile(int damage, int tankX, int tankY, int tankSize, ProjectileType type, double angle) : projectile(type), angle(angle), damage(damage),
-        GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), 10, angle, "./images/cannonBall.png") {};
+        GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), 45, angle, "./images/cannonBall.png") {};
 
     bool destroyObject(GameObject& object) {
         return !object.withstandTheShot(damage);

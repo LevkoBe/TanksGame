@@ -137,7 +137,10 @@ void GameRun::moveProjectile(Projectile& projectile) {
     projectile.setPosition(x, y);
 
     if (!insideGameField(x, y, projectile.getSize() / 4)) {
-        projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
+        auto it = std::find(projectiles->begin(), projectiles->end(), projectile);
+        if (it != projectiles->end()) {
+            projectiles->erase(it);
+        }
         return;
     }
 
@@ -171,12 +174,19 @@ bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
 bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
 
     for (auto& wall : *walls) {
-        if (circlesColliding(wall.getPos().first, wall.getPos().second, wall.getSize() / 4, x, y, projectile.getSize() / 4))
+        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, projectile.getSize() / 4))
         {
             if (projectile.destroyObject(wall)) {
-                walls->erase(std::find(walls->begin(), walls->end(), wall));
+                auto it = std::find(walls->begin(), walls->end(), wall);
+                if (it != walls->end()) {
+                    walls->erase(it);
+                }
             }
-            projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
+
+            auto it = std::find(projectiles->begin(), projectiles->end(), projectile);
+            if (it != projectiles->end()) {
+                projectiles->erase(it);
+            }
             return true;
         }
     }
@@ -189,9 +199,15 @@ bool GameRun::hitsBots(int x, int y, Projectile projectile) {
         if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, x, y, projectile.getSize() / 4))
         {
             if (projectile.destroyObject(bot)) {
-                bots->erase(std::find(bots->begin(), bots->end(), bot));
+                auto it = std::find(bots->begin(), bots->end(), bot);
+                if (it != bots->end()) {
+                    bots->erase(it);
+                }
             }
-            projectiles->erase(std::find(projectiles->begin(), projectiles->end(), projectile));
+            auto it = std::find(projectiles->begin(), projectiles->end(), projectile);
+            if (it != projectiles->end()) {
+                projectiles->erase(it);
+            }
             return true;
         }
     }

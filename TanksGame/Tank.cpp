@@ -2,7 +2,7 @@
 
 Tank::Tank(int coefficient, int size, std::string image) :
     GameObject(size / 2, size / 2, size, 0, 0.0, image),
-    pDamage(coefficient / 10), projectile(CannonBall) {}
+    pDamage(coefficient), projectile(CannonBall) {}
 
 void Tank::rotate(double angle) {
     rotationAngle += angle;
