@@ -13,5 +13,6 @@ void GameManager::run() {
 }
 
 void GameManager::initWindow() {
-	// Initialize window properties
+	const float FPS = 120.0f;
+	window.setFramerateLimit(FPS);
 }

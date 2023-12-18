@@ -4,8 +4,11 @@
 
 class BotTank: public Tank
 {
+	int maxSpeed;
 public:
-	BotTank(int level, int size): Tank(90 * level, size, getImageName(level)) {};
+	BotTank(int level, int size): Tank(90 * level, size, determineImageName(level)), maxSpeed(level * 10) {};
+
+	int getMaxSpeed() const;
 
 	void move() {
 
@@ -15,7 +18,7 @@ public:
 		// when vertically/horizontally alligned, shoot()
 	}
 
-	std::string getImageName(int level) {
+	std::string determineImageName(int level) const {
 		return "./images/prototank00" + std::to_string(level + 1) + ".png";
 	}
 

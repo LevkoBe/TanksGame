@@ -4,10 +4,11 @@
 #include <tuple>
 #include "GameObject.h"
 #include "Map.h"
-#include "Tank.h"
+#include "BotTank.h"
 #include "Commands.h" // todo: check if needed line
 #include "Projectile.h"
 #include "GameState.h"
+#include "PathFinder.h"
 
 
 enum ControlMode {
@@ -22,18 +23,36 @@ private:
     int level;
     int windowSize = 800;
     int gridSize = 10;
+    int cellSize = 80;
     ControlMode mode = RotateVelocity;
     std::shared_ptr<Tank> userTank;
-    std::shared_ptr<std::vector<Tank>> bots = std::make_shared<std::vector<Tank>>();
-    std::shared_ptr<std::vector<Tank>> allBots = std::make_shared<std::vector<Tank>>();
+    std::shared_ptr<std::vector<BotTank>> bots = std::make_shared<std::vector<BotTank>>();
+    std::shared_ptr<std::vector<BotTank>> allBots = std::make_shared<std::vector<BotTank>>();
     std::shared_ptr<std::vector<GameObject>> walls = std::make_shared<std::vector<GameObject>>();
     std::shared_ptr<std::vector<Projectile>> projectiles = std::make_shared<std::vector<Projectile>>();
-    std::shared_ptr<std::vector<std::vector<bool>>> wallsMap = std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
+    std::shared_ptr<std::vector<std::vector<bool>>> wallsMap = 
+        std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
+    PathFinder pathfinder;
 
 public:
     GameRun(int windowSize, int gridSize, int difficulty);
 
+    template <typename TankType>
+    bool collisionsWithUser(int xExpected, int yExpected, TankType& bot);
+
+    std::pair<int, int> getPxCoordinates(int mapCoordX, int mapCoordY);
+
     void createMap();
+
+    void moveTankWithSpeed(Tank& tank, int direction, double speed);
+
+    int calculateSpeed(int startX, int startY, int targetX, int targetY, BotTank& bot) const;
+
+    float calculateRotationAngle(int startX, int startY, int targetX, int targetY) const;
+
+    std::pair<int, int> calculatePositionOnBinaryMap(const std::pair<int, int>& realPosition) const;
+
+    void moveBot(Tank& bot);
 
     void reset() {}
 
@@ -41,11 +60,16 @@ public:
 
     GameState update(std::vector<Command> commands);
 
+    void moveBot(BotTank& bot);
+
     GameState positions();
 
-    void setSpeed(int extent);
+    void setUserTankSpeed(int extent);
 
     void moveUserTank();
+
+    template <typename TankType>
+    void moveTank(TankType& tank);
 
     void moveProjectile(Projectile& projectile);
 
@@ -53,9 +77,14 @@ public:
 
     bool collisionsWithBots(int xExpected, int yExpected);
 
+    template <typename TankType>
+    bool collisionsBotBots(int xExpected, int yExpected, TankType& actualBot);
+
     bool hitsWalls(int x, int y, Projectile projectile);
 
     bool hitsBots(int x, int y, Projectile projectile);
+
+    bool hitsUserTank(int x, int y, Projectile projectile);
 
     bool collisionsWithProjectiles(int xExpected, int yExpected);
 

@@ -141,6 +141,7 @@
     <ClCompile Include="GameRun.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Tank.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="GameRun.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Projectile.h" />
     <ClInclude Include="Projectiles.h" />
     <ClInclude Include="Renderer.h" />

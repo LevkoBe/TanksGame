@@ -9,17 +9,62 @@ Renderer::Renderer(int windowSize) : windowSize(windowSize) {
     text.setFillColor(sf::Color::White);
 }
 
-void Renderer::render(sf::RenderWindow& window, GameState gamestate) {
-    window.clear();
-    drawBackground(window);
-
+void Renderer::renderGameObjects(sf::RenderWindow& window, const GameState& gamestate) {
     renderWalls(window, gamestate.walls);
     renderBots(window, gamestate.bots);
     renderUserTank(window, gamestate.userTank);
     renderProjectiles(window, gamestate.projectiles);
+}
+void Renderer::renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor) {
+    sf::Font stylishFont;
+    if (!stylishFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
+        std::cerr << "Failed to load stylish font!" << std::endl;
+        return;
+    }
+
+    text.setFont(stylishFont);
+    text.setString(textString);
+    text.setCharacterSize(100);
+
+    sf::FloatRect textBounds = text.getLocalBounds();
+    text.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
+
+    text.setPosition(xPos, yPos);
+    text.setFillColor(textColor);
+
+    renderTextWithOutline(text, window, sf::Color::Black);
+}
+
+
+void Renderer::renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor) {
+    sf::Color textColor = text.getFillColor();
+    text.setOutlineColor(outlineColor);
+    text.setOutlineThickness(2.0);
+
+    window.draw(text);
+
+    text.setFillColor(textColor);
+    text.setOutlineThickness(0.0);
+}
+
+void Renderer::render(sf::RenderWindow& window, GameState& gamestate) {
+    window.clear();
+    drawBackground(window);
+
+    if (gamestate.userTank == nullptr) {
+        renderGameOverText(window, "You lose", windowSize / 2, windowSize / 2, sf::Color::Red);
+    }
+    else if (gamestate.bots == nullptr || gamestate.bots->empty()) {
+        sf::Color warmOrange(255, 153, 51);
+        renderGameOverText(window, "You won", windowSize / 2, windowSize / 2, warmOrange);
+    }
+    else {
+        renderGameObjects(window, gamestate);
+    }
 
     window.display();
 }
+
 
 void Renderer::drawBackground(sf::RenderWindow& window) {
     sf::Texture backgroundTexture;
@@ -48,7 +93,7 @@ void Renderer::renderWalls(sf::RenderWindow& window, const std::shared_ptr<std::
     }
 }
 
-void Renderer::renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<Tank>>& bots) {
+void Renderer::renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<BotTank>>& bots) {
     for (const auto& tank : *bots) {
         sf::Texture botTexture;
         if (botTexture.loadFromFile(tank.getImageName())) {

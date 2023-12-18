@@ -21,6 +21,14 @@ void GameObject::setVelocity(int x, int y) {
     yVel = y;
 }
 
+void GameObject::setSpeed(int s) {
+    speed = s;
+}
+
+void GameObject::setAngle(double angle) {
+    rotationAngle = angle;
+}
+
 std::pair<int, int> GameObject::getAcc() const {
     return std::make_pair(xAcc, yAcc);
 }

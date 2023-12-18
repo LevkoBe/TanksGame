@@ -44,6 +44,10 @@ public:
 
     void setVelocity(int x, int y);
 
+    void setSpeed(int s);
+
+    void setAngle(double angle);
+
     std::pair<int, int> getAcc() const;
 
     int getAcceleration() const;

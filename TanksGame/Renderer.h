@@ -1,3 +1,4 @@
+// Renderer.h
 #pragma once
 #include "GameRun.h"
 #include "FolderReader.h"
@@ -10,7 +11,7 @@ private:
     const double movementSpeed = 5.0;
     const int windowSize = 800;
     sf::Font font;
-    sf::Text text;  // todo: text.setString(userInput);
+    sf::Text text;
     sf::Sprite backgroundSprite;
     sf::Sprite sprite;
     std::vector<sf::Sprite> users;
@@ -25,16 +26,22 @@ private:
 public:
     Renderer(int windowSize);
 
-    void render(sf::RenderWindow& window, GameState gamestate);
+    void render(sf::RenderWindow& window, GameState& gamestate);
 
 private:
     void drawBackground(sf::RenderWindow& window);
 
+    void renderGameObjects(sf::RenderWindow& window, const GameState& gamestate);
+
     void renderWalls(sf::RenderWindow& window, const std::shared_ptr<std::vector<GameObject>>& walls);
 
-    void renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<Tank>>& bots);
+    void renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<BotTank>>& bots);
 
     void renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Tank>& userTank);
 
     void renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles);
+
+    void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
+
+    void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
 };
