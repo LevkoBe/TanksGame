@@ -1,7 +1,7 @@
 #include "Tank.h"
 
 Tank::Tank(int coefficient, int size, std::string image) :
-    GameObject(size / 2, size / 2, size * 0.9, 0, 0.0, image),
+    GameObject(size / 2, size / 2, size, 0, 0.0, image),
     pDamage(coefficient), projectile(CannonBall) {}
 
 void Tank::rotate(double angle) {

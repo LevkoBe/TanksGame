@@ -68,12 +68,14 @@ void GameRun::createMap() {
 
                 std::random_device rd;
                 std::mt19937 gen(rd());
-                std::uniform_int_distribution<size_t> distribution(0, wallTextures.size() - 1);
+                std::uniform_int_distribution<size_t> distribution(0, 100);
                 size_t randomIndex = distribution(gen);
-                std::string image = wallTextures[randomIndex];
-
-                walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, image));
-                (*wallsMap)[i][j] = true;
+                if (randomIndex < 60)
+                {
+                    std::string image = wallTextures[randomIndex % (wallTextures.size() - 1)];
+                    walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, image));
+                    (*wallsMap)[i][j] = true;
+                }
             }
         }
     }
@@ -140,7 +142,7 @@ void GameRun::moveTank(Tank& tank) {
     int yExpected = tank.getPos().second + tank.getVel().second;
 
     if (!insideGameField(xExpected, yExpected, tank.getSize() / 4) ||
-        collisionsWithWalls(xExpected, yExpected)) {
+        collisionsWithWalls(xExpected, yExpected, 1)) {
         tank.stop();
         return;
     }
@@ -158,7 +160,7 @@ void GameRun::moveTank(BotTank& tank) {
     int yExpected = tank.getPos().second + tank.getVel().second;
 
     if (!insideGameField(xExpected, yExpected, tank.getSize() / 4) ||
-        collisionsWithWalls(xExpected, yExpected)) {
+        collisionsWithWalls(xExpected, yExpected, 0.7)) {
         tank.stop();
         return;
     }
@@ -191,10 +193,10 @@ void GameRun::moveProjectile(Projectile& projectile) {
     if (hitsUserTank(x, y, projectile)) { return; }
 }
 
-bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
+bool GameRun::collisionsWithWalls(int xExpected, int yExpected, double sensitivity) {
 
     for (auto& wall : *walls) {
-        if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
+        if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, static_cast<int>(sensitivity * userTank->getSize() / 4))) {
             return true;
         }
     }

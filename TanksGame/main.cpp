@@ -3,8 +3,8 @@
 
 
 int main() {
-    int windowSize = 800;
-    int gridSize = 5;
+    int windowSize = 900;
+    int gridSize = 10;
     int difficulty = 3;
     GameManager game(windowSize, gridSize, difficulty);
     game.run();

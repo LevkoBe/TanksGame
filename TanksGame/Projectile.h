@@ -49,7 +49,7 @@ public:
     bool operator==(const Projectile& other) const {
         return (xPos == other.getPos().first && yPos == other.getPos().second);
     }
-    Projectile(int damage, int tankX, int tankY, int tankSize, ProjectileType type, double angle) : projectile(type), angle(angle), damage(damage),
+    Projectile(int damage, int tankX, int tankY, int tankSize, int speed, ProjectileType type, double angle) : projectile(type), angle(angle), damage(damage),
         GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), 45, angle, "./images/cannonBall.png") {};
 
     bool damageObject(GameObject& object) {

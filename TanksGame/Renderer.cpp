@@ -121,7 +121,27 @@ void Renderer::renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Ta
     sprite.setScale(scaleFactor, scaleFactor);
     sprite.setRotation(static_cast<float>(userTank->getAngle()));
     window.draw(sprite);
+
+    // Display userTank's HP
+    sf::Font stylishFont;
+    if (!stylishFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
+        std::cerr << "Failed to load stylish font!" << std::endl;
+        return;
+    }
+
+    sf::Text hpText;
+    hpText.setFont(stylishFont);
+    hpText.setString("HP: " + std::to_string(userTank->getHP())); // Assuming getHP() returns the tank's HP
+    hpText.setCharacterSize(30);
+    hpText.setFillColor(sf::Color::White);
+
+    sf::FloatRect textBounds = hpText.getLocalBounds();
+    hpText.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
+    hpText.setPosition(static_cast<float>(userTank->getPos().first), static_cast<float>(userTank->getPos().second - userTank->getSize() / 2));
+
+    renderTextWithOutline(hpText, window, sf::Color::Black);
 }
+
 
 void Renderer::renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles) {
     for (const auto& projectile : *projectiles) {

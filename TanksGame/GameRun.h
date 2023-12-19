@@ -50,7 +50,7 @@ public:
 
     void moveProjectile(Projectile& projectile);
 
-    bool collisionsWithWalls(int xExpected, int yExpected);
+    bool collisionsWithWalls(int xExpected, int yExpected, double sensitivity);
 
     bool collisionsWithBots(int xExpected, int yExpected);
 

@@ -18,7 +18,7 @@ public:
     void rotate(double angle);
 
     void shoot(std::shared_ptr<std::vector<Projectile>> projectiles) {
-        projectiles->push_back(Projectile(pDamage, xPos, yPos, size, projectile, rotationAngle));
+        projectiles->push_back(Projectile(pDamage, xPos, yPos, size, size / 10, projectile, rotationAngle));
     }
 
     void stop();

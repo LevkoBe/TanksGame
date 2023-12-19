@@ -13,6 +13,6 @@ void GameManager::run() {
 }
 
 void GameManager::initWindow() {
-	const float FPS = 120.0f;
+	const float FPS = 10.0f; // for me it doesn't seem to change anything
 	window.setFramerateLimit(FPS);
 }
