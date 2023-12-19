@@ -38,18 +38,14 @@ public:
     std::pair<int, int> getVel() const;
 
     void setPosition(int x, int y);
-
     void setVelocity(int x, int y);
-
     void setSpeed(int s);
-
     void setAngle(double angle);
 
     int getSize() const;
-
     int getChange() const;
-
     double getSpeed() const;
+    int getHP() const;
 
     void speedUp(int extent);
 

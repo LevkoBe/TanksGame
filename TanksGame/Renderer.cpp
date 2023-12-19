@@ -51,7 +51,7 @@ void Renderer::render(sf::RenderWindow& window, GameState& gamestate) {
     window.clear();
     drawBackground(window);
 
-    if (gamestate.userTank == nullptr) {
+    if (gamestate.userTank->getHP() <= 0) {
         renderGameOverText(window, "You lose", windowSize / 2, windowSize / 2, sf::Color::Red);
     }
     else if (gamestate.bots == nullptr || gamestate.bots->empty()) {

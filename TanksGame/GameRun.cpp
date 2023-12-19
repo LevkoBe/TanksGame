@@ -226,7 +226,7 @@ bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
     for (auto& wall : *walls) {
         if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, projectile.getSize() / 4))
         {
-            if (projectile.destroyObject(wall)) {
+            if (projectile.damageObject(wall)) {
                 auto it = std::find(walls->begin(), walls->end(), wall);
                 if (it != walls->end()) {
                     walls->erase(it);
@@ -248,7 +248,7 @@ bool GameRun::hitsBots(int x, int y, Projectile projectile) {
     for (auto& bot : *bots) {
         if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, x, y, projectile.getSize() / 4))
         {
-            if (projectile.destroyObject(bot)) {
+            if (projectile.damageObject(bot)) {
                 auto it = std::find(bots->begin(), bots->end(), bot);
                 if (it != bots->end()) {
                     bots->erase(it);
@@ -268,27 +268,13 @@ bool GameRun::hitsUserTank(int x, int y, Projectile projectile) {
 
     if (CollisionHandler::circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, x, y, projectile.getSize() / 4))
     {
-        if (projectile.destroyObject(*userTank)) {
-            userTank = nullptr;
-        }
+        projectile.damageObject(*userTank);
+
         auto it = std::find(projectiles->begin(), projectiles->end(), projectile);
         if (it != projectiles->end()) {
             projectiles->erase(it);
         }
         return true;
-    }
-    return false;
-}
-
-bool GameRun::collisionsWithProjectiles(int xExpected, int yExpected) {
-    for (auto& projectile : *projectiles) {
-        if (CollisionHandler::circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
-        {
-            if (projectile.destroyObject(*userTank)) {
-                userTank = nullptr;
-                return true;
-            }
-        }
     }
     return false;
 }

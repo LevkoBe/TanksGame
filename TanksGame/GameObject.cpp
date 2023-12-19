@@ -45,6 +45,10 @@ double GameObject::getSpeed() const {
     return sqrt(xVel * xVel + yVel * yVel);
 }
 
+int GameObject::getHP() const {
+    return healthPoints;
+}
+
 void GameObject::speedUp(int extent) {
     speed += extent * change;
     setVelocity();

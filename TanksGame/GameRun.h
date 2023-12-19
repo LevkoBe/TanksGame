@@ -65,8 +65,6 @@ public:
 
     bool hitsUserTank(int x, int y, Projectile projectile);
 
-    bool collisionsWithProjectiles(int xExpected, int yExpected);
-
     bool insideGameField(int x, int y, int size) const;
     
     bool addBot(int position);
