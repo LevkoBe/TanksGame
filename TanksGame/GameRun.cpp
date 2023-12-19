@@ -175,7 +175,7 @@ void GameRun::moveProjectile(Projectile& projectile) {
         return;
     }
 
-    if (hitsWalls(x, y, projectile)) { return; } // todo: R-tree
+    if (projectile.hitsWalls(x, y, *projectiles, *walls)) { return; } // todo: R-tree
 
     if (hitsBots(x, y, projectile)) { return; }
 
@@ -215,28 +215,6 @@ bool GameRun::collisionsBotBots(int xExpected, int yExpected, TankType& actualBo
     for (auto& bot : *bots) {
         if (bot == actualBot) { continue; }
         if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
-
-    for (auto& wall : *walls) {
-        if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, projectile.getSize() / 4))
-        {
-            if (projectile.damageObject(wall)) {
-                auto it = std::find(walls->begin(), walls->end(), wall);
-                if (it != walls->end()) {
-                    walls->erase(it);
-                }
-            }
-
-            auto it = std::find(projectiles->begin(), projectiles->end(), projectile);
-            if (it != projectiles->end()) {
-                projectiles->erase(it);
-            }
             return true;
         }
     }

@@ -59,8 +59,6 @@ public:
     template <typename TankType>
     bool collisionsBotBots(int xExpected, int yExpected, TankType& actualBot);
 
-    bool hitsWalls(int x, int y, Projectile projectile);
-
     bool hitsBots(int x, int y, Projectile projectile);
 
     bool hitsUserTank(int x, int y, Projectile projectile);

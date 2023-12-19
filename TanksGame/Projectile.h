@@ -3,7 +3,9 @@
 #define M_PI 3.14159265358979323846
 #endif
 #include "GameObject.h"
+#include "CollisionHandler.h"
 #include "Projectiles.h"
+#include <vector>
 
 class Projectile : public GameObject
 {
@@ -42,6 +44,10 @@ class Projectile : public GameObject
     }
 
 public:
+
+    bool operator==(const Projectile& other) const {
+        return (xPos == other.getPos().first && yPos == other.getPos().second);
+    }
     Projectile(int damage, int tankX, int tankY, int tankSize, ProjectileType type, double angle) : projectile(type), angle(angle), damage(damage),
         GameObject(calculateX(tankX, tankSize, angle, type), calculateY(tankY, tankSize, angle, type), calculateSize(tankSize, type), 45, angle, "./images/cannonBall.png") {};
 
@@ -51,5 +57,31 @@ public:
 
     double getAngle() const {
         return angle;
+    }
+
+    bool hitsWalls(int x, int y, std::vector<Projectile>& projectiles, std::vector<GameObject>& walls) {
+
+        for (auto& wall : walls) {
+            if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, getSize() / 4))
+            {
+                if (damageObject(wall)) {
+                    auto it = std::find(walls.begin(), walls.end(), wall);
+                    if (it != walls.end()) {
+                        walls.erase(it);
+                    }
+                }
+
+                auto it = projectiles.begin();
+                while (it != projectiles.end()) {
+                    if (*it == *this) {
+                        it = projectiles.erase(it);
+                        return true;
+                    }
+                    ++it;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 };
