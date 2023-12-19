@@ -26,13 +26,19 @@ void GameRun::moveBot(BotTank& bot) {
     std::pair<int, int> userMapPos = PathFinder::calculatePositionOnBinaryMap(userTank->getPos(), cellSize);
 
     Node nextCell = pathfinder.findNextCell(botMapPos.first, botMapPos.second, userMapPos.first, userMapPos.second);
-    int botX = bot.getPos().first;
-    int botY = bot.getPos().second;
     auto coords = getPxCoordinates(nextCell.x, nextCell.y);
+
     bot.setSpeed(level * (cellSize) / 30);
-    bot.setAngle(calculateRotationAngle(botX, botY, coords.first, coords.second));
+    bot.setAngle(calculateRotationAngle(bot.getPos().first, bot.getPos().second, coords.first, coords.second));
     bot.setVelocity();
-    moveTank(bot);
+    
+
+    if (hasLineOfSight(bot)) {
+        bot.shoot(projectiles);
+    }
+    else {
+        moveTank(bot);
+    }
 }
 
 std::pair<int, int> GameRun::getPxCoordinates(int mapCoordX, int mapCoordY) {
@@ -296,6 +302,21 @@ bool GameRun::addBot(int position) {
 bool GameRun::insideGameField(int x, int y) const {
     return x > 0 && y > 0 && x < windowSize && y < windowSize;
 }
+
+bool GameRun::hasLineOfSight(BotTank& bot) const {
+    int xSource = bot.getPos().first / cellSize;
+    int ySource = bot.getPos().second / cellSize;
+    int xTarget = userTank->getPos().first / cellSize;
+    int yTarget = userTank->getPos().second / cellSize;
+
+    if (pathfinder.hasLineOfSight(xSource, ySource, xTarget, yTarget)) {
+        bot.setAngle(calculateRotationAngle(xSource, ySource, xTarget, yTarget));
+        return true;
+    }
+
+    return false;
+}
+
 
 void GameRun::changeSize(double increase) {
     // todo: check if smaller than a cell;

@@ -10,21 +10,21 @@ public:
 
 	int getMaxSpeed() const;
 
-	void move() {
+	//void move() {
 
-		// search for userTank;
-		// find a route
-		// move there
-		// when vertically/horizontally alligned, shoot()
-	}
+	//	// search for userTank;
+	//	// find a route
+	//	// move there
+	//	// when vertically/horizontally alligned, shoot()
+	//}
 
 	std::string determineImageName(int level) const {
 		return "./images/prototank00" + std::to_string(level + 1) + ".png";
 	}
 
-	void shoot() {
-		// search for userTank;
-		// if sees userTank, shoot
-	}
+	//void shoot() {
+	//	// search for userTank;
+	//	// if sees userTank, shoot
+	//}
 };
 

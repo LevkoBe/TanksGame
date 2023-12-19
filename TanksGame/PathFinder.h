@@ -66,6 +66,33 @@ public:
         return { x, y };
     }
 
+    bool hasLineOfSight(int xSource, int ySource, int xTarget, int yTarget) const {
+
+        int dx = abs(xTarget - xSource);
+        int dy = abs(yTarget - ySource);
+        int sx = (xSource < xTarget) ? 1 : -1;
+        int sy = (ySource < yTarget) ? 1 : -1;
+        int err = dx - dy;
+
+        while (xSource != xTarget || ySource != yTarget) {
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                xSource += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                ySource += sy;
+            }
+
+            if ((*wallsMap)[xSource][ySource]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 private:
     bool isValid(int x, int y) const;
 

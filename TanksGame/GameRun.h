@@ -69,5 +69,7 @@ public:
     void changeSize(double increase);
 
     void run() {}
+
+    bool hasLineOfSight(BotTank& source) const;
 };
 
