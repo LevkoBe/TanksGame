@@ -52,7 +52,7 @@ void Renderer::render(sf::RenderWindow& window, GameState& gamestate) {
     drawBackground(window);
 
     if (gamestate.userTank->getHP() <= 0) {
-        renderGameOverText(window, "You lose!", windowSize / 2, windowSize / 2, sf::Color::Red);
+        renderGameOverText(window, "You lost!", windowSize / 2, windowSize / 2, sf::Color::Red);
     }
     else if (gamestate.bots == nullptr || gamestate.bots->empty()) {
         sf::Color warmOrange(255, 153, 51);

@@ -304,13 +304,13 @@ bool GameRun::insideGameField(int x, int y) const {
 }
 
 bool GameRun::hasLineOfSight(BotTank& bot) const {
-    int xSource = bot.getPos().first / cellSize;
-    int ySource = bot.getPos().second / cellSize;
-    int xTarget = userTank->getPos().first / cellSize;
-    int yTarget = userTank->getPos().second / cellSize;
+    int botX = bot.getPos().first;
+    int botY = bot.getPos().second;
+    int userX = userTank->getPos().first;
+    int userY = userTank->getPos().second;
 
-    if (pathfinder.hasLineOfSight(xSource, ySource, xTarget, yTarget)) {
-        bot.setAngle(calculateRotationAngle(xSource, ySource, xTarget, yTarget));
+    if (pathfinder.hasLineOfSight(botX / cellSize, botY / cellSize, userX / cellSize, userY / cellSize)) {
+        bot.setAngle(calculateRotationAngle(botX, botY, userX, userY));
         return true;
     }
 
