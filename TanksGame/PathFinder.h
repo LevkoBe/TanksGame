@@ -60,6 +60,12 @@ public:
 
     Node findNextCell(int startX, int startY, int targetX, int targetY) const;
 
+    static std::pair<int, int> calculatePositionOnBinaryMap(const std::pair<int, int>& realPosition, int cellSize) {
+        int x = (realPosition.first + 1) / cellSize;
+        int y = (realPosition.second + 1) / cellSize;
+        return { x, y };
+    }
+
 private:
     bool isValid(int x, int y) const;
 

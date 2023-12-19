@@ -22,8 +22,8 @@ GameRun::GameRun(int windowSize, int gridSize, int difficulty) : windowSize(wind
 }
 
 void GameRun::moveBot(BotTank& bot) {
-    std::pair<int, int> botMapPos = calculatePositionOnBinaryMap(bot.getPos());
-    std::pair<int, int> userMapPos = calculatePositionOnBinaryMap(userTank->getPos());
+    std::pair<int, int> botMapPos = PathFinder::calculatePositionOnBinaryMap(bot.getPos(), cellSize);
+    std::pair<int, int> userMapPos = PathFinder::calculatePositionOnBinaryMap(userTank->getPos(), cellSize);
 
     Node nextCell = pathfinder.findNextCell(botMapPos.first, botMapPos.second, userMapPos.first, userMapPos.second);
     int botX = bot.getPos().first;
@@ -45,12 +45,6 @@ float GameRun::calculateRotationAngle(int startX, int startY, int targetX, int t
     int dx = targetX - startX;
     int dy = targetY - startY;
     return atan2(dy, dx) * 180.0 / M_PI + 90.0;
-}
-
-std::pair<int, int> GameRun::calculatePositionOnBinaryMap(const std::pair<int, int>& realPosition) const {
-    int x = realPosition.first / cellSize;
-    int y = realPosition.second / cellSize;
-    return { x, y };
 }
 
 void GameRun::createMap() {
@@ -135,8 +129,7 @@ GameState GameRun::positions() {
     return state;
 }
 
-template <typename TankType>
-void GameRun::moveTank(TankType& tank) {
+void GameRun::moveTank(Tank& tank) {
     int xExpected = tank.getPos().first + tank.getVel().first;
     int yExpected = tank.getPos().second + tank.getVel().second;
 
@@ -146,17 +139,27 @@ void GameRun::moveTank(TankType& tank) {
         return;
     }
 
-    if (tank == *userTank) {
-        if (collisionsWithBots(xExpected, yExpected)) {
-            tank.stop();
-            return;
-        }
+    if (collisionsWithBots(xExpected, yExpected)) {
+        tank.stop();
+        return;
     }
-    else {
-        if (collisionsBotBots(xExpected, yExpected, tank) || collisionsWithUser(xExpected, yExpected, tank)) {
-            tank.stop();
-            return;
-        }
+
+    tank.setPosition(xExpected, yExpected);
+}
+
+void GameRun::moveTank(BotTank& tank) {
+    int xExpected = tank.getPos().first + tank.getVel().first;
+    int yExpected = tank.getPos().second + tank.getVel().second;
+
+    if (!insideGameField(xExpected, yExpected, tank.getSize() / 4) ||
+        collisionsWithWalls(xExpected, yExpected)) {
+        tank.stop();
+        return;
+    }
+
+    if (collisionsBotBots(xExpected, yExpected, tank) || collisionsWithUser(xExpected, yExpected, tank)) {
+        tank.stop();
+        return;
     }
 
     tank.setPosition(xExpected, yExpected);
@@ -175,7 +178,7 @@ void GameRun::moveProjectile(Projectile& projectile) {
         return;
     }
 
-    if (projectile.hitsWalls(x, y, *projectiles, *walls)) { return; } // todo: R-tree
+    if (projectile.hitsWalls(x, y, *projectiles, *walls, *wallsMap)) { return; } // todo: R-tree
 
     if (hitsBots(x, y, projectile)) { return; }
 
@@ -210,8 +213,7 @@ bool GameRun::collisionsWithUser(int xExpected, int yExpected, TankType& bot) {
 }
 
 
-template <typename TankType>
-bool GameRun::collisionsBotBots(int xExpected, int yExpected, TankType& actualBot) {
+bool GameRun::collisionsBotBots(int xExpected, int yExpected, BotTank& actualBot) {
     for (auto& bot : *bots) {
         if (bot == actualBot) { continue; }
         if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {

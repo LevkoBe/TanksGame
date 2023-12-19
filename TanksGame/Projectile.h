@@ -5,6 +5,7 @@
 #include "GameObject.h"
 #include "CollisionHandler.h"
 #include "Projectiles.h"
+#include "PathFinder.h"
 #include <vector>
 
 class Projectile : public GameObject
@@ -59,12 +60,14 @@ public:
         return angle;
     }
 
-    bool hitsWalls(int x, int y, std::vector<Projectile>& projectiles, std::vector<GameObject>& walls) {
+    bool hitsWalls(int x, int y, std::vector<Projectile>& projectiles, std::vector<GameObject>& walls, std::vector<std::vector<bool>>& wallsMap) {
 
         for (auto& wall : walls) {
             if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, getSize() / 4))
             {
                 if (damageObject(wall)) {
+                    auto position = PathFinder::calculatePositionOnBinaryMap(wall.getPos(), wall.getSize());
+                    wallsMap[position.first][position.second] = false;
                     auto it = std::find(walls.begin(), walls.end(), wall);
                     if (it != walls.end()) {
                         walls.erase(it);

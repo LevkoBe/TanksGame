@@ -37,8 +37,6 @@ public:
 
     float calculateRotationAngle(int startX, int startY, int targetX, int targetY) const;
 
-    std::pair<int, int> calculatePositionOnBinaryMap(const std::pair<int, int>& realPosition) const;
-
     void processCommands(std::vector<Command> commands);
 
     GameState update(std::vector<Command> commands);
@@ -47,8 +45,8 @@ public:
 
     GameState positions();
 
-    template <typename TankType>
-    void moveTank(TankType& tank);
+    void moveTank(Tank& tank);
+    void moveTank(BotTank& tank);
 
     void moveProjectile(Projectile& projectile);
 
@@ -56,8 +54,7 @@ public:
 
     bool collisionsWithBots(int xExpected, int yExpected);
 
-    template <typename TankType>
-    bool collisionsBotBots(int xExpected, int yExpected, TankType& actualBot);
+    bool collisionsBotBots(int xExpected, int yExpected, BotTank& actualBot);
 
     bool hitsBots(int x, int y, Projectile projectile);
 
