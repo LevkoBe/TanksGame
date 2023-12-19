@@ -65,6 +65,27 @@ void Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.display();
 }
 
+void Renderer::renderMenu(sf::RenderWindow& window, bool gameFinished, float unit) {
+    window.clear();
+
+    // Draw "Play" button
+    sf::RectangleShape playButton(sf::Vector2f(3 * unit, unit));
+    playButton.setPosition(window.getSize().x / 2 - 1.5 * unit, window.getSize().y / 2 - unit / 2);
+    playButton.setFillColor(sf::Color::Yellow);
+    window.draw(playButton);
+    renderGameOverText(window, "Play", windowSize / 2, windowSize / 2, sf::Color(255, 153, 51));
+
+    // Draw "To Menu" button if the game is finished
+    if (gameFinished) {
+        sf::RectangleShape toMenuButton(sf::Vector2f(100.0f, 50.0f));
+        toMenuButton.setPosition(window.getSize().x / 2 - 50.0f, window.getSize().y / 2 + 50.0f);
+        toMenuButton.setFillColor(sf::Color::Blue);
+        window.draw(toMenuButton);
+    }
+
+    window.display();
+}
+
 
 void Renderer::drawBackground(sf::RenderWindow& window) {
     sf::Texture backgroundTexture;

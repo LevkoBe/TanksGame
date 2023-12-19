@@ -28,6 +28,8 @@ private:
 public:
     GameRun(int windowSize, int gridSize, int difficulty);
 
+    bool isFinished() { return false; }
+
     template <typename TankType>
     bool collisionsWithUser(int xExpected, int yExpected, TankType& bot);
 

@@ -3,22 +3,27 @@
 #include "Renderer.h"
 #include "UserCommandHandler.h"
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include "Tank.h"
 
-class GameManager
-{
-	UserCommandHandler commander;
-	GameRun game;
-	Renderer renderer;
-	Tank sampleTank;
-	int windowSize;
-	sf::RenderWindow window;
+class GameManager {
+    UserCommandHandler commander;
+    Renderer renderer;
+    std::unique_ptr<GameRun> game = nullptr;
+    int windowSize = 900;
+    int gridSize = 10;
+    int difficulty = 5;
+    float unit = windowSize / 6;
+    sf::RenderWindow window;
 
 public:
-	GameManager(int windowSize, int gridSize, int difficulty);
-	
-	void run();
+    GameManager(int windowSize);
 
-	void initWindow();
+    void run();
+
+private:
+    void initWindow();
+    void handleMenuInteractions();
+    void startNewGame();
 };
 

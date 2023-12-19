@@ -6,7 +6,7 @@ class BotTank: public Tank
 {
 	int maxSpeed;
 public:
-	BotTank(int level, int size): Tank(level, size, determineImageName(level)), maxSpeed(level * 10) {};
+	BotTank(int level, int size): Tank(level, size, determineImageName(level % 4)), maxSpeed(level * 10) {};
 
 	int getMaxSpeed() const;
 

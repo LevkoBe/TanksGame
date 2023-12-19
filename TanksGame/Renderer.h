@@ -9,7 +9,9 @@ class Renderer {
 private:
     const double rotationSpeed = 5.0;
     const double movementSpeed = 5.0;
-    const int windowSize = 800;
+    int windowSize = 900;
+    int gridSize = 10;
+    int difficulty = 5;
     sf::Font font;
     sf::Text text;
     sf::Sprite backgroundSprite;
@@ -27,6 +29,7 @@ public:
     Renderer(int windowSize);
 
     void renderGame(sf::RenderWindow& window, GameState& gamestate);
+    void renderMenu(sf::RenderWindow& window, bool gameFinished, float unit);
 
 private:
     void drawBackground(sf::RenderWindow& window);
