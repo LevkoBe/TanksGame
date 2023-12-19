@@ -47,7 +47,7 @@ void Renderer::renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, c
     text.setOutlineThickness(0.0);
 }
 
-void Renderer::render(sf::RenderWindow& window, GameState& gamestate) {
+void Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.clear();
     drawBackground(window);
 

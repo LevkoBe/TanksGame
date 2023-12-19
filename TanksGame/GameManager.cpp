@@ -8,7 +8,7 @@ void GameManager::run() {
 	while (window.isOpen()) {
 		auto commands = move(commander.processEvents(window));
 		auto gamestate = game.update(move(commands));
-		renderer.render(window, gamestate);
+		renderer.renderGame(window, gamestate);
 	}
 }
 

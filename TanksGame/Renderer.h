@@ -26,7 +26,7 @@ private:
 public:
     Renderer(int windowSize);
 
-    void render(sf::RenderWindow& window, GameState& gamestate);
+    void renderGame(sf::RenderWindow& window, GameState& gamestate);
 
 private:
     void drawBackground(sf::RenderWindow& window);
@@ -38,4 +38,5 @@ private:
     void renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles);
 
     void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
+    void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
 };
