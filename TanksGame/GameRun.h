@@ -35,17 +35,9 @@ public:
 
     void createMap();
 
-    void moveTankWithSpeed(Tank& tank, int direction, double speed);
-
-    int calculateSpeed(int startX, int startY, int targetX, int targetY, BotTank& bot) const;
-
     float calculateRotationAngle(int startX, int startY, int targetX, int targetY) const;
 
     std::pair<int, int> calculatePositionOnBinaryMap(const std::pair<int, int>& realPosition) const;
-
-    void moveBot(Tank& bot);
-
-    void reset() {}
 
     void processCommands(std::vector<Command> commands);
 
@@ -54,8 +46,6 @@ public:
     void moveBot(BotTank& bot);
 
     GameState positions();
-
-    void moveUserTank();
 
     template <typename TankType>
     void moveTank(TankType& tank);
@@ -80,12 +70,6 @@ public:
     bool insideGameField(int x, int y, int size) const;
     
     bool addBot(int position);
-
-    bool circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2);
-
-    bool squareCircleColliding(double squareX, double squareY, double squareSize, double circleX, double circleY, double circleRadius);
-
-    bool squareCircleColliding(int squareX, int squareY, int squareSize, int circleX, int circleY, int circleRadius);
 
     bool insideGameField(int x, int y) const;
 

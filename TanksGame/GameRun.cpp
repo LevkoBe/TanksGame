@@ -2,6 +2,7 @@
 #include "GameRun.h"
 #include "BotTank.h"
 #include "FolderReader.h"
+#include "CollisionHandler.h"
 #include <windows.h>
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
@@ -112,7 +113,7 @@ void GameRun::processCommands(std::vector<Command> commands) {
 
 GameState GameRun::update(std::vector<Command> commands) {
     processCommands(move(commands));
-    moveUserTank();
+    moveTank(*userTank);
     for (auto& projectile : (*projectiles)) {
         moveProjectile(projectile);
     }
@@ -132,10 +133,6 @@ GameState GameRun::positions() {
     state.bots = bots;
     state.projectiles = projectiles;
     return state;
-}
-
-void GameRun::moveUserTank() {
-    moveTank(*userTank);
 }
 
 template <typename TankType>
@@ -188,7 +185,7 @@ void GameRun::moveProjectile(Projectile& projectile) {
 bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
 
     for (auto& wall : *walls) {
-        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
+        if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
             return true;
         }
     }
@@ -197,7 +194,7 @@ bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
 
 bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
     for (auto& bot : *bots) {
-        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
+        if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
             return true;
         }
     }
@@ -206,7 +203,7 @@ bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
 
 template <typename TankType>
 bool GameRun::collisionsWithUser(int xExpected, int yExpected, TankType& bot) {
-    if (circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, xExpected, yExpected, bot.getSize() / 4)) {
+    if (CollisionHandler::circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, xExpected, yExpected, bot.getSize() / 4)) {
         return true;
     }
     return false;
@@ -217,7 +214,7 @@ template <typename TankType>
 bool GameRun::collisionsBotBots(int xExpected, int yExpected, TankType& actualBot) {
     for (auto& bot : *bots) {
         if (bot == actualBot) { continue; }
-        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
+        if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
             return true;
         }
     }
@@ -227,7 +224,7 @@ bool GameRun::collisionsBotBots(int xExpected, int yExpected, TankType& actualBo
 bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
 
     for (auto& wall : *walls) {
-        if (squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, projectile.getSize() / 4))
+        if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, projectile.getSize() / 4))
         {
             if (projectile.destroyObject(wall)) {
                 auto it = std::find(walls->begin(), walls->end(), wall);
@@ -249,7 +246,7 @@ bool GameRun::hitsWalls(int x, int y, Projectile projectile) {
 bool GameRun::hitsBots(int x, int y, Projectile projectile) {
 
     for (auto& bot : *bots) {
-        if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, x, y, projectile.getSize() / 4))
+        if (CollisionHandler::circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, x, y, projectile.getSize() / 4))
         {
             if (projectile.destroyObject(bot)) {
                 auto it = std::find(bots->begin(), bots->end(), bot);
@@ -269,7 +266,7 @@ bool GameRun::hitsBots(int x, int y, Projectile projectile) {
 
 bool GameRun::hitsUserTank(int x, int y, Projectile projectile) {
 
-    if (circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, x, y, projectile.getSize() / 4))
+    if (CollisionHandler::circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, x, y, projectile.getSize() / 4))
     {
         if (projectile.destroyObject(*userTank)) {
             userTank = nullptr;
@@ -285,7 +282,7 @@ bool GameRun::hitsUserTank(int x, int y, Projectile projectile) {
 
 bool GameRun::collisionsWithProjectiles(int xExpected, int yExpected) {
     for (auto& projectile : *projectiles) {
-        if (circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
+        if (CollisionHandler::circlesColliding(projectile.getPos().first, projectile.getPos().second, projectile.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4))
         {
             if (projectile.destroyObject(*userTank)) {
                 userTank = nullptr;
@@ -328,29 +325,6 @@ bool GameRun::addBot(int position) {
     theTank.setPosition(xPos, yPos);
     bots->push_back(theTank);
     return true;
-}
-
-bool GameRun::circlesColliding(int x1, int y1, int radius1, int x2, int y2, int radius2) {
-    int distance = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
-    return distance < (radius1 + radius2);
-}
-
-bool GameRun::squareCircleColliding(double squareTopLeftX, double squareTopLeftY, double squareSize, double circleCenterX, double circleCenterY, double circleRadius) {
-    double closestX = std::max(squareTopLeftX, std::min(circleCenterX, squareTopLeftX + squareSize));
-    double closestY = std::max(squareTopLeftY, std::min(circleCenterY, squareTopLeftY + squareSize));
-
-    double distance = std::sqrt(std::pow(closestX - circleCenterX, 2) + std::pow(closestY - circleCenterY, 2));
-    return distance < circleRadius;
-}
-
-bool GameRun::squareCircleColliding(int squareX, int squareY, int squareSize, int circleCenterX, int circleCenterY, int circleRadius) {
-    double sqX = static_cast<double>(squareX);
-    double sqY = static_cast<double>(squareY);
-    double sqS = static_cast<double>(squareSize);
-    double crX = static_cast<double>(circleCenterX);
-    double crY = static_cast<double>(circleCenterY);
-    double crR = static_cast<double>(circleRadius);
-    return squareCircleColliding(sqX, sqY, sqS, crX, crY, crR);
 }
 
 bool GameRun::insideGameField(int x, int y) const {
