@@ -160,15 +160,23 @@ void GameRun::moveTank(TankType& tank) {
     int xExpected = tank.getPos().first + tank.getVel().first;
     int yExpected = tank.getPos().second + tank.getVel().second;
 
-    if (!insideGameField(xExpected, yExpected, tank.getSize() / 4)) { return; }
-
-    if (collisionsWithWalls(xExpected, yExpected)) { return; }
+    if (!insideGameField(xExpected, yExpected, tank.getSize() / 4) ||
+        collisionsWithWalls(xExpected, yExpected)) {
+        tank.stop();
+        return;
+    }
 
     if (tank == *userTank) {
-        if (collisionsWithBots(xExpected, yExpected)) { return; }
+        if (collisionsWithBots(xExpected, yExpected)) {
+            tank.stop();
+            return;
+        }
     }
     else {
-        if (collisionsBotBots(xExpected, yExpected, tank) || collisionsWithUser(xExpected, yExpected, tank)) { return; }
+        if (collisionsBotBots(xExpected, yExpected, tank) || collisionsWithUser(xExpected, yExpected, tank)) {
+            tank.stop();
+            return;
+        }
     }
 
     tank.setPosition(xExpected, yExpected);
@@ -200,7 +208,6 @@ bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
 
     for (auto& wall : *walls) {
         if (squareCircleColliding(wall.getPos().first, wall.getPos().second, static_cast<int>(wall.getSize()), xExpected, yExpected, userTank->getSize() / 4)) {
-            userTank->stop();
             return true;
         }
     }
@@ -210,7 +217,6 @@ bool GameRun::collisionsWithWalls(int xExpected, int yExpected) {
 bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
     for (auto& bot : *bots) {
         if (circlesColliding(bot.getPos().first, bot.getPos().second, bot.getSize() / 4, xExpected, yExpected, userTank->getSize() / 4)) {
-            userTank->stop();
             return true;
         }
     }
@@ -220,7 +226,6 @@ bool GameRun::collisionsWithBots(int xExpected, int yExpected) {
 template <typename TankType>
 bool GameRun::collisionsWithUser(int xExpected, int yExpected, TankType& bot) {
     if (circlesColliding(userTank->getPos().first, userTank->getPos().second, userTank->getSize() / 4, xExpected, yExpected, bot.getSize() / 4)) {
-        userTank->stop();
         return true;
     }
     return false;
@@ -318,7 +323,6 @@ bool GameRun::insideGameField(int x, int y, int radius) const {
     {
         return true;
     }
-    userTank->stop();
     return false;
 }
 
