@@ -160,7 +160,7 @@ void GameRun::moveTank(BotTank& tank) {
     int yExpected = tank.getPos().second + tank.getVel().second;
 
     if (!insideGameField(xExpected, yExpected, tank.getSize() / 4) ||
-        collisionsWithWalls(xExpected, yExpected, 0.7)) {
+        collisionsWithWalls(xExpected, yExpected, 0.5)) {
         tank.stop();
         return;
     }

@@ -30,18 +30,12 @@ public:
 
 private:
     void drawBackground(sf::RenderWindow& window);
-
     void renderGameObjects(sf::RenderWindow& window, const GameState& gamestate);
 
     void renderWalls(sf::RenderWindow& window, const std::shared_ptr<std::vector<GameObject>>& walls);
-
     void renderBots(sf::RenderWindow& window, const std::shared_ptr<std::vector<BotTank>>& bots);
-
     void renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Tank>& userTank);
-
     void renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles);
 
     void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
-
-    void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
 };
