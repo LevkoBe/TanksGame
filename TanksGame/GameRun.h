@@ -10,21 +10,12 @@
 #include "GameState.h"
 #include "PathFinder.h"
 
-
-enum ControlMode {
-    LeftUpRightDown,
-    RotatePosition,
-    RotateVelocity,
-    RotateAcceleration
-};
-
 class GameRun {
 private:
     int level;
     int windowSize = 800;
     int gridSize = 10;
     int cellSize = 80;
-    ControlMode mode = RotateVelocity;
     std::shared_ptr<Tank> userTank;
     std::shared_ptr<std::vector<BotTank>> bots = std::make_shared<std::vector<BotTank>>();
     std::shared_ptr<std::vector<BotTank>> allBots = std::make_shared<std::vector<BotTank>>();
@@ -63,8 +54,6 @@ public:
     void moveBot(BotTank& bot);
 
     GameState positions();
-
-    void setUserTankSpeed(int extent);
 
     void moveUserTank();
 

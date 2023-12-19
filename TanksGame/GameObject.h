@@ -18,8 +18,6 @@ protected:
     int xVel = 0;
     int yVel = 0;
     int speed = 0;
-    int xAcc = 0;
-    int yAcc = 0;
     int change = 10; // standardized increase for velocity, acceleration, and position
     int size = 100;
     int healthPoints = 100;
@@ -30,9 +28,8 @@ public:
     GameObject(int initialXPos, int initialYPos, int initialSize, int speed, double angle = 0, std::string image = "none");
     
     bool operator==(const GameObject& other) const {
-        // Compare all relevant attributes for equality
-        return std::tie(xPos, yPos, xVel, yVel, speed, xAcc, yAcc, change, size, healthPoints, rotationAngle, image) ==
-            std::tie(other.xPos, other.yPos, other.xVel, other.yVel, other.speed, other.xAcc, other.yAcc, other.change,
+        return std::tie(xPos, yPos, xVel, yVel, speed, change, size, healthPoints, rotationAngle, image) ==
+            std::tie(other.xPos, other.yPos, other.xVel, other.yVel, other.speed, other.change,
                 other.size, other.healthPoints, other.rotationAngle, other.image);
     }
 
@@ -47,10 +44,6 @@ public:
     void setSpeed(int s);
 
     void setAngle(double angle);
-
-    std::pair<int, int> getAcc() const;
-
-    int getAcceleration() const;
 
     int getSize() const;
 

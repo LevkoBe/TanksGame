@@ -36,25 +36,25 @@ void UserCommandHandler::handleTextEvent(sf::Event& event) {
 }
 
 void UserCommandHandler::handleKeyEvent(sf::Event& event) {
-    if (event.key.code == sf::Keyboard::Subtract) { // Decrease image size
+    if (event.key.code == sf::Keyboard::Subtract) {
         commands.push_back(ScaleDown);
     }
-    else if (event.key.code == sf::Keyboard::Add) { // Increase image size
+    else if (event.key.code == sf::Keyboard::Add) {
         commands.push_back(ScaleUp);
     }
-    else if (event.key.code == sf::Keyboard::Left) { // Rotate image left
+    else if (event.key.code == sf::Keyboard::Left) {
         commands.push_back(RotateCounterClockWise);
     }
-    else if (event.key.code == sf::Keyboard::Right) { // Rotate image right
+    else if (event.key.code == sf::Keyboard::Right) {
         commands.push_back(RotateClockWise);
     }
-    else if (event.key.code == sf::Keyboard::Up) { // Move image forward / accelerate
+    else if (event.key.code == sf::Keyboard::Up) {
         commands.push_back(MoveForward);
     }
-    else if (event.key.code == sf::Keyboard::Down) { // Move image backward / deccelerate
+    else if (event.key.code == sf::Keyboard::Down) {
         commands.push_back(MoveBackward);
     }
-    else if (event.key.code == sf::Keyboard::Space) { // Move image backward / deccelerate
+    else if (event.key.code == sf::Keyboard::Space) {
         commands.push_back(Shoot);
     }
 }

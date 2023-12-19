@@ -96,10 +96,10 @@ void GameRun::processCommands(std::vector<Command> commands) {
             userTank->rotate(-10.0);
             break;
         case MoveForward:
-            setUserTankSpeed(1);
+            userTank->speedUp(1);
             break;
         case MoveBackward:
-            setUserTankSpeed(-1);
+            userTank->speedUp(-1);
             break;
         case Shoot:
             userTank->shoot(projectiles);
@@ -116,8 +116,11 @@ GameState GameRun::update(std::vector<Command> commands) {
     for (auto& projectile : (*projectiles)) {
         moveProjectile(projectile);
     }
-    for (auto& bot : *bots) {
-        moveBot(bot);
+    if (userTank != nullptr)
+    {
+        for (auto& bot : *bots) {
+            moveBot(bot);
+        }
     }
     return positions();
 }
@@ -131,32 +134,12 @@ GameState GameRun::positions() {
     return state;
 }
 
-void GameRun::setUserTankSpeed(int extent) {
-    switch (mode)
-    {
-    case LeftUpRightDown:
-        break;
-    case RotatePosition:
-        userTank->speedUp(extent);
-        break;
-    case RotateVelocity:
-        userTank->speedUp(extent);
-        break;
-    case RotateAcceleration:
-        userTank->accelerate(extent);
-        break;
-    default:
-        break;
-    }
-}
-
 void GameRun::moveUserTank() {
     moveTank(*userTank);
 }
 
 template <typename TankType>
 void GameRun::moveTank(TankType& tank) {
-    tank.speedUp(tank.getAcceleration()); // todo: check coefficients system
     int xExpected = tank.getPos().first + tank.getVel().first;
     int yExpected = tank.getPos().second + tank.getVel().second;
 
@@ -180,8 +163,6 @@ void GameRun::moveTank(TankType& tank) {
     }
 
     tank.setPosition(xExpected, yExpected);
-
-    if (mode == RotatePosition) { tank.stop(); }
 }
 
 void GameRun::moveProjectile(Projectile& projectile) {

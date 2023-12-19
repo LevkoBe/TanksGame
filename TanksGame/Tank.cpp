@@ -12,13 +12,6 @@ void Tank::rotate(double angle) {
     yVel = speed * std::sin(angleRadians);
 }
 
-void Tank::accelerate(int extent) {
-    double angleRadians = (rotationAngle - 90) * M_PI / 180.0;
-
-    xAcc += extent * change * std::cos(angleRadians);
-    yAcc += extent * change * std::sin(angleRadians);
-}
-
 int Tank::getPDamage() const { return pDamage; }
 ProjectileType Tank::getProjectile() const { return projectile; }
 

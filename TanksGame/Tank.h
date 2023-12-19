@@ -15,8 +15,6 @@ public:
     int getPDamage() const;
     ProjectileType getProjectile() const;
 
-    void accelerate(int extent);
-
     void rotate(double angle);
 
     void shoot(std::shared_ptr<std::vector<Projectile>> projectiles) {
