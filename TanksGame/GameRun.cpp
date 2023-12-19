@@ -2,12 +2,14 @@
 #include "GameRun.h"
 #include "BotTank.h"
 #include "FolderReader.h"
+#include "MapSimplified.h"
 #include "CollisionHandler.h"
 #include <windows.h>
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
       cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
-    createMap();
+    //createMap();
+    wallsMap = MapSimplified::createMap(gridSize);
     for (int i = 0; i < difficulty; i++)
     {
         allBots->push_back(BotTank(i + 1, cellSize));
