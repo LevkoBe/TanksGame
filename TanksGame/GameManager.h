@@ -23,7 +23,7 @@ public:
 
 private:
     void initWindow();
-    void handleMenuInteractions();
+    void handleMenuInteractions(Command command);
     void startNewGame();
 };
 

@@ -7,5 +7,12 @@ enum Command {
     RotateCounterClockWise,
     MoveForward,
     MoveBackward,
-    Shoot
+    Shoot,
+    FirstButtonPressed,
+    SecondLeftPressed,
+    SecondRightPressed,
+    ThirdLeftPressed,
+    ThirdRightPressed,
+    FourthButtonPressed,
+    None
 };

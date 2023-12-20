@@ -15,5 +15,7 @@ class UserCommandHandler
 public:
     std::vector<Command> processEvents(sf::RenderWindow& window);
 
+    Command checkButtonsPressed(sf::RenderWindow& window);
+
 };
 

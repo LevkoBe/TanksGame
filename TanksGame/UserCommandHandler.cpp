@@ -18,6 +18,42 @@ std::vector<Command> UserCommandHandler::processEvents(sf::RenderWindow& window)
     return commands;
 }
 
+Command UserCommandHandler::checkButtonsPressed(sf::RenderWindow& window) {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        }
+        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            if (mousePos.y <= window.getSize().y / 4) { // Upper part of the window
+                return FirstButtonPressed;
+            }
+            else if (mousePos.y >= window.getSize().y * 3 / 4) { // Lower part of the window
+                return FourthButtonPressed;
+            }
+            else if (mousePos.y <= window.getSize().y / 2) { // Central upper
+                if (mousePos.x <= window.getSize().x / 3) { // Left
+                    return SecondLeftPressed;
+                }
+                else if (mousePos.x >= window.getSize().x * 2 / 3) { // Right
+                    return SecondRightPressed;
+                }
+            }
+            else if (mousePos.y >= window.getSize().y / 2) { // Central lower
+                if (mousePos.x <= window.getSize().x / 3) { // Left
+                    return ThirdLeftPressed;
+                }
+                else if (mousePos.x >= window.getSize().x * 2 / 3) { // Right
+                    return ThirdRightPressed;
+                }
+            }
+        }
+    }
+    return None;
+}
+
+
 void UserCommandHandler::handleTextEvent(sf::Event& event) {
     if (event.text.unicode < 128) {
         if (event.text.unicode == '\b' && !userInput.empty()) { // Backspace

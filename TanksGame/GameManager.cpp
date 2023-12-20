@@ -8,35 +8,52 @@ void GameManager::run() {
 
     while (window.isOpen()) {
         if (game) {
-            auto commands = move(commander.processEvents(window));
-            auto gamestate = game->update(move(commands));
-            renderer.renderGame(window, gamestate);
+            if (game->isFinished())
+            {
+                auto command = commander.checkButtonsPressed(window);
+                handleMenuInteractions(command);
+            }
+            else {
+                auto commands = move(commander.processEvents(window));
+                auto gamestate = game->update(move(commands));
+                renderer.renderGame(window, gamestate);
+            }
         }
         else {
             renderer.renderMenu(window, game && game->isFinished(), unit);
-            handleMenuInteractions();
+            auto command = commander.checkButtonsPressed(window);
+            handleMenuInteractions(command);
         }
     }
 }
 
-void GameManager::handleMenuInteractions() {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            window.close();
+void GameManager::handleMenuInteractions(Command command) {
+    switch (command)
+    {
+    case FirstButtonPressed:
+        if (game) {
+            game.reset();  // Reset the game to nullptr, returning to the menu
         }
-        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            if (mousePos.x >= window.getSize().x / 2 - 3 * unit / 2 && mousePos.x <= window.getSize().x / 2 + 3 * unit / 2 &&
-                mousePos.y >= window.getSize().y / 2 - unit / 2 && mousePos.y <= window.getSize().y / 2 + unit / 2) {
-                startNewGame();
-            }
-            else if (game && game->isFinished() && mousePos.x >= window.getSize().x / 2 - 50 &&
-                mousePos.x <= window.getSize().x / 2 + 50 && mousePos.y >= window.getSize().y / 2 + 50 &&
-                mousePos.y <= window.getSize().y / 2 + 100) {
-                game.reset();  // Reset the game to nullptr, returning to the menu
-            }
+        else {
+            startNewGame();
         }
+        break;
+    case SecondLeftPressed:
+        gridSize--;
+        break;
+    case SecondRightPressed:
+        gridSize++;
+        break;
+    case ThirdLeftPressed:
+        difficulty--;
+        break;
+    case ThirdRightPressed:
+        difficulty++;
+        break;
+    case FourthButtonPressed:
+        break;
+    default:
+        break;
     }
 }
 
@@ -46,6 +63,6 @@ void GameManager::startNewGame() {
 }
 
 void GameManager::initWindow() {
-    const float FPS = 10.0f; // for me it doesn't seem to change anything
+    const float FPS = 600.0f; // for me it doesn't seem to change anything
     window.setFramerateLimit(FPS);
 }

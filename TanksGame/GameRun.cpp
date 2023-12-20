@@ -28,7 +28,7 @@ void GameRun::moveBot(BotTank& bot) {
     Node nextCell = pathfinder.findNextCell(botMapPos.first, botMapPos.second, userMapPos.first, userMapPos.second);
     auto coords = getPxCoordinates(nextCell.x, nextCell.y);
 
-    bot.setSpeed(level * (cellSize) / 30);
+    bot.setSpeed(bot.getChange() * level * (cellSize) / 300);
     bot.setAngle(calculateRotationAngle(bot.getPos().first, bot.getPos().second, coords.first, coords.second));
     bot.setVelocity();
     
