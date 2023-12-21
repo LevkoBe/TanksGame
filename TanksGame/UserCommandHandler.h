@@ -6,6 +6,7 @@
 class UserCommandHandler
 {
     std::string userInput = "";
+    int windowSize = 0;
     std::vector<Command> commands;
 
     void handleTextEvent(sf::Event& event);
@@ -15,7 +16,10 @@ class UserCommandHandler
 public:
     std::vector<Command> processEvents(sf::RenderWindow& window);
 
-    Command checkButtonsPressed(sf::RenderWindow& window);
+    Command handleMenuInteractions(sf::RenderWindow& window);
 
+    void setWindowSize(int windowSize) {
+        this->windowSize = windowSize;
+    }
 };
 

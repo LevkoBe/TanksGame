@@ -1,7 +1,9 @@
 #include "GameManager.h"
 #include "GameState.h"
 
-GameManager::GameManager(int windowSize) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game"), renderer(windowSize) {}
+GameManager::GameManager(int windowSize) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game"), renderer(windowSize) {
+    commander.setWindowSize(windowSize);
+}
 
 void GameManager::run() {
     initWindow();
@@ -10,7 +12,7 @@ void GameManager::run() {
         if (game) {
             if (game->isFinished())
             {
-                auto command = commander.checkButtonsPressed(window);
+                auto command = commander.handleMenuInteractions(window);
                 handleMenuInteractions(command);
             }
             else {
@@ -21,7 +23,7 @@ void GameManager::run() {
         }
         else {
             renderer.renderMenu(window);
-            auto command = commander.checkButtonsPressed(window);
+            auto command = commander.handleMenuInteractions(window);
             handleMenuInteractions(command);
         }
     }

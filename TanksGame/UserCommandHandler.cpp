@@ -18,7 +18,7 @@ std::vector<Command> UserCommandHandler::processEvents(sf::RenderWindow& window)
     return commands;
 }
 
-Command UserCommandHandler::checkButtonsPressed(sf::RenderWindow& window) {
+Command UserCommandHandler::handleMenuInteractions(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
@@ -26,25 +26,25 @@ Command UserCommandHandler::checkButtonsPressed(sf::RenderWindow& window) {
         }
         else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-            if (mousePos.y <= window.getSize().y / 4) { // Upper part of the window
+            if (mousePos.y <= windowSize / 4) { // Upper part of the window
                 return FirstButtonPressed;
             }
-            else if (mousePos.y >= window.getSize().y * 3 / 4) { // Lower part of the window
+            else if (mousePos.y >= windowSize * 3 / 4) { // Lower part of the window
                 return FourthButtonPressed;
             }
-            else if (mousePos.y <= window.getSize().y / 2) { // Central upper
-                if (mousePos.x <= window.getSize().x / 3) { // Left
+            else if (mousePos.y <= windowSize / 2) { // Central upper
+                if (mousePos.x <= windowSize / 3) { // Left
                     return SecondLeftPressed;
                 }
-                else if (mousePos.x >= window.getSize().x * 2 / 3) { // Right
+                else if (mousePos.x >= windowSize * 2 / 3) { // Right
                     return SecondRightPressed;
                 }
             }
-            else if (mousePos.y >= window.getSize().y / 2) { // Central lower
-                if (mousePos.x <= window.getSize().x / 3) { // Left
+            else if (mousePos.y >= windowSize / 2) { // Central lower
+                if (mousePos.x <= windowSize / 3) { // Left
                     return ThirdLeftPressed;
                 }
-                else if (mousePos.x >= window.getSize().x * 2 / 3) { // Right
+                else if (mousePos.x >= windowSize * 2 / 3) { // Right
                     return ThirdRightPressed;
                 }
             }

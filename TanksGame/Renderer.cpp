@@ -15,6 +15,7 @@ void Renderer::renderGameObjects(sf::RenderWindow& window, const GameState& game
     renderUserTank(window, gamestate.userTank);
     renderProjectiles(window, gamestate.projectiles);
 }
+
 void Renderer::renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor) {
     sf::Font stylishFont;
     if (!stylishFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
@@ -34,7 +35,6 @@ void Renderer::renderGameOverText(sf::RenderWindow& window, const std::string& t
 
     renderTextWithOutline(text, window, sf::Color::Black);
 }
-
 
 void Renderer::renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor) {
     sf::Color textColor = text.getFillColor();
@@ -65,55 +65,51 @@ void Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.display();
 }
 
-void Renderer::drawButton(sf::RenderWindow& window, const std::string& text, const sf::Font& font, const sf::Color& fillColor, float x, float y) {
-    sf::Text buttonText(text, font, 40);
-    buttonText.setFillColor(sf::Color::White);
-    buttonText.setPosition(x, y);
+void Renderer::drawButton(sf::RenderWindow& window, const std::string& text, const sf::Font& font, const sf::Color& fillColor, float centerX, float centerY, int height) {
+    
+    sf::Text buttonText(text, font, height / 2);
+    buttonText.setFillColor(fillColor);
+    buttonText.setOrigin(buttonText.getLocalBounds().width / 2, buttonText.getLocalBounds().height / 2);
+    buttonText.setPosition(centerX, centerY);
 
-    sf::RectangleShape buttonRect(sf::Vector2f(buttonText.getGlobalBounds().width + 20, buttonText.getGlobalBounds().height + 10));
-    buttonRect.setPosition(x - 10, y - 5);
-    buttonRect.setFillColor(fillColor);
+    sf::RectangleShape buttonRect(sf::Vector2f(buttonText.getGlobalBounds().width * 1.5, buttonText.getGlobalBounds().height * 1.5));
+    buttonRect.setOrigin(buttonRect.getLocalBounds().width / 2, buttonRect.getLocalBounds().height / 2);
+    buttonRect.setPosition(centerX, centerY + 20);
+    buttonRect.setFillColor(sf::Color::Black);
 
     window.draw(buttonRect);
     window.draw(buttonText);
 }
 
-void Renderer::drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, const sf::Font& font, float x, float y,
-    const std::string& leftButtonText, const std::string& rightButtonText) {
-    sf::Text labelText(label, font, 30);
-    labelText.setFillColor(sf::Color::White);
-    labelText.setPosition(x, y);
+void Renderer::drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, const sf::Font& font, int centerY, int height,
+        const std::string& leftButtonText, const std::string& rightButtonText) {
+    sf::Text labelText(label, font, height / 4);
+    sf::Color Gray(170, 170, 170);
+    labelText.setFillColor(Gray);
+    labelText.setOrigin(labelText.getLocalBounds().width / 2, labelText.getLocalBounds().height / 2);
+    labelText.setPosition(windowSize / 2, centerY);
 
-    // Draw label
     window.draw(labelText);
 
-    // Draw left button
-    drawButton(window, leftButtonText, font, sf::Color::Green, x - 50.0f, y + 30.0f);
+    drawButton(window, leftButtonText, font, sf::Color(27, 142, 186, 255), windowSize / 6, centerY, height);
 
-    // Draw right button
-    drawButton(window, rightButtonText, font, sf::Color::Green, x + 50.0f, y + 30.0f);
+    drawButton(window, rightButtonText, font, sf::Color(205, 92, 59, 255), windowSize * 5 / 6, centerY, height);
 }
 
 void Renderer::renderMenu(sf::RenderWindow& window) {
     window.clear();
 
-    // Draw "Play" button
     sf::Font playFont;
-    if (playFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
-        drawButton(window, "Play", playFont, sf::Color::Yellow, window.getSize().x / 2 - 50, window.getSize().y / 4 - 20);
-    }
-    else {
-        std::cerr << "Failed to load font for the 'Play' button!" << std::endl;
-    }
+    playFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf");
 
-    // Draw "Quit" button
-    drawButton(window, "Quit", playFont, sf::Color::Red, window.getSize().x / 2 - 50.0f, window.getSize().y * 3 / 4);
+    drawButton(window, "Play", playFont, sf::Color::Yellow, windowSize / 2, windowSize / 8, windowSize / 4);
+    drawButton(window, "Quit", playFont, sf::Color::Red, windowSize / 2, windowSize * 7 / 8, windowSize / 4);
 
-    // Draw "Difficulty" label with buttons "-" on the left and "+" on the right
-    drawLabelWithButtons(window, "Difficulty", playFont, window.getSize().x / 4, window.getSize().y / 2 - 20, "-", "+");
+    std::string buttonText = "Map size: " + std::to_string(difficulty);
+    drawLabelWithButtons(window, buttonText, playFont, windowSize * 3 / 8, windowSize / 4, "-", "+");
 
-    // Draw "Map Size" label with buttons "-" and "+" as well
-    drawLabelWithButtons(window, "Map Size", playFont, window.getSize().x * 3 / 4 - 60.0f, window.getSize().y / 2 - 20, "-", "+");
+    buttonText = "Difficulty: " + std::to_string(difficulty);
+    drawLabelWithButtons(window, buttonText, playFont, windowSize * 5 / 8, windowSize / 4, "-", "+");
 
     window.display();
 }
@@ -195,7 +191,6 @@ void Renderer::renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Ta
 
     renderTextWithOutline(hpText, window, sf::Color::Black);
 }
-
 
 void Renderer::renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles) {
     for (const auto& projectile : *projectiles) {
