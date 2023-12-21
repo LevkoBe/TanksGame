@@ -18,6 +18,8 @@ public:
 
     Command handleMenuInteractions(sf::RenderWindow& window);
 
+    Command handlePause(sf::RenderWindow& window, int buttonsNumber);
+
     void setWindowSize(int windowSize) {
         this->windowSize = windowSize;
     }

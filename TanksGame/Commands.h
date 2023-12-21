@@ -13,6 +13,6 @@ enum Command {
     SecondRightPressed,
     ThirdLeftPressed,
     ThirdRightPressed,
-    FourthButtonPressed,
+    LastButtonPressed,
     None
 };

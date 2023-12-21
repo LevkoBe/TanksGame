@@ -30,7 +30,7 @@ Command UserCommandHandler::handleMenuInteractions(sf::RenderWindow& window) {
                 return FirstButtonPressed;
             }
             else if (mousePos.y >= windowSize * 3 / 4) { // Lower part of the window
-                return FourthButtonPressed;
+                return LastButtonPressed;
             }
             else if (mousePos.y <= windowSize / 2) { // Central upper
                 if (mousePos.x <= windowSize / 3) { // Left
@@ -46,6 +46,42 @@ Command UserCommandHandler::handleMenuInteractions(sf::RenderWindow& window) {
                 }
                 else if (mousePos.x >= windowSize * 2 / 3) { // Right
                     return ThirdRightPressed;
+                }
+            }
+        }
+    }
+    return None;
+}
+
+std::vector<Command> getCommandsVector(int buttonsNumber) {
+    switch (buttonsNumber)
+    {
+    case 1:
+        return std::vector<Command>{ FirstButtonPressed };
+    case 2:
+        return std::vector<Command>{ FirstButtonPressed, LastButtonPressed };
+    case 3:
+        return std::vector<Command>{ FirstButtonPressed, SecondLeftPressed, LastButtonPressed };
+    case 4:
+        return std::vector<Command>{ FirstButtonPressed, SecondLeftPressed, ThirdLeftPressed, LastButtonPressed };
+    default:
+        return std::vector<Command>();
+    }
+}
+
+Command UserCommandHandler::handlePause(sf::RenderWindow& window, int buttonsNumber) {
+    sf::Event event;
+    std::vector<Command> returnOptions = getCommandsVector(buttonsNumber);
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        }
+        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+            for (int i = 0; i < buttonsNumber; i++)
+            {
+                if (mousePos.y <= (i + 1) * windowSize / buttonsNumber) { // Upper part of the window
+                    return returnOptions[i];
                 }
             }
         }

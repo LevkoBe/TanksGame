@@ -15,6 +15,7 @@ class GameManager {
     int difficulty = 5;
     float unit = windowSize / 6;
     sf::RenderWindow window;
+    GameRunningState runningState = Menu;
 
 public:
     GameManager(int windowSize);
@@ -25,5 +26,7 @@ private:
     void initWindow();
     void handleMenuInteractions(Command command);
     void startNewGame();
+
+    void handlePause(Command command);
 };
 

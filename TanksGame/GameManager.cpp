@@ -1,7 +1,8 @@
 #include "GameManager.h"
 #include "GameState.h"
 
-GameManager::GameManager(int windowSize) : windowSize(windowSize), window(sf::VideoMode(windowSize, windowSize), "Tank Game"), renderer(windowSize) {
+GameManager::GameManager(int windowSize) : runningState(Menu), windowSize(windowSize),
+window(sf::VideoMode(windowSize, windowSize), "Tank Game"), renderer(windowSize) {
     commander.setWindowSize(windowSize);
 }
 
@@ -10,15 +11,32 @@ void GameManager::run() {
 
     while (window.isOpen()) {
         if (game) {
-            if (game->isFinished())
+            if (runningState == Running)
             {
-                auto command = commander.handleMenuInteractions(window);
-                handleMenuInteractions(command);
-            }
-            else {
                 auto commands = move(commander.processEvents(window));
                 auto gamestate = game->update(move(commands));
-                renderer.renderGame(window, gamestate);
+                runningState = renderer.renderGame(window, gamestate);
+            }
+            else {
+                int buttonsNumber = 2;
+                switch (runningState)
+                {
+                case Win:
+                    renderer.renderPause(window, move(std::vector<std::string>{"Next level", "Menu"}));
+                    break;
+                case Lose:
+                    renderer.renderPause(window, move(std::vector<std::string>{"Restart", "Menu"}));
+                    break;
+                case Pause:
+                    renderer.renderPause(window, move(std::vector<std::string>{"Continue", "Restart", "Menu"}));
+                    buttonsNumber++;
+                    break;
+                default:
+                    break;
+                }
+                auto command = commander.handlePause(window, buttonsNumber);
+                handlePause(command);
+
             }
         }
         else {
@@ -29,16 +47,44 @@ void GameManager::run() {
     }
 }
 
+void GameManager::handlePause(Command command) {
+    switch (command)
+    {
+    case FirstButtonPressed:
+        switch (runningState)
+        {
+        case Win:
+            difficulty++;
+        case Lose:
+            startNewGame();
+        case Pause:
+            runningState = Running;
+        default:
+            break;
+        }
+        break;
+    case SecondLeftPressed:
+        startNewGame();
+        runningState = Running;
+        break;
+    case ThirdLeftPressed:
+        break;
+    case LastButtonPressed:
+        game.reset(); // nullptr => menu
+        break;
+    case None:
+        break;
+    default:
+        break;
+    }
+}
+
 void GameManager::handleMenuInteractions(Command command) {
     switch (command)
     {
     case FirstButtonPressed:
-        if (game) {
-            game.reset();  // Reset the game to nullptr, returning to the menu
-        }
-        else {
-            startNewGame();
-        }
+        startNewGame();
+        runningState = Running;
         break;
     case SecondLeftPressed:
         gridSize = gridSize <= 2 ? gridSize : --gridSize;
@@ -52,7 +98,7 @@ void GameManager::handleMenuInteractions(Command command) {
     case ThirdRightPressed:
         difficulty++;
         break;
-    case FourthButtonPressed:
+    case LastButtonPressed:
         window.close();
         break;
     default:

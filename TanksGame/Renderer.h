@@ -3,6 +3,7 @@
 #include "GameRun.h"
 #include "FolderReader.h"
 #include "GameState.h"
+#include "GameRunningStates.h"
 #include <SFML/Graphics.hpp>
 
 class Renderer {
@@ -28,7 +29,8 @@ public:
     Renderer(int windowSize);
 
     void renderMenu(sf::RenderWindow& window, int gridSize, int difficulty);
-    void renderGame(sf::RenderWindow& window, GameState& gamestate);
+    void renderPause(sf::RenderWindow& window, std::vector<std::string> buttons);
+    GameRunningState renderGame(sf::RenderWindow& window, GameState& gamestate);
 
 private:
     void drawBackground(sf::RenderWindow& window);
@@ -42,8 +44,8 @@ private:
     void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
     void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
 
-    void drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, const sf::Font& font, int centerY, int height,
+    void drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, int centerY, int height,
         const std::string& leftButtonText, const std::string& rightButtonText);
-    void drawButton(sf::RenderWindow& window, const std::string& text, const sf::Font& font, const sf::Color& fillColor, float centerX, float centerY, int height);
+    void drawButton(sf::RenderWindow& window, const std::string& text, const sf::Color& fillColor, float centerX, float centerY, int height);
 
 };
