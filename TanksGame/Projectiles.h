@@ -10,4 +10,5 @@ enum ProjectileType {
     Reducer,    // makes smaller
     BombaBall,  // reflects from walls till collision with a tank
     BlackHole,  // absorbs everything
+    SelfGuided, // maze-solving, bots-killing
 };

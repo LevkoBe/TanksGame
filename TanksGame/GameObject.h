@@ -18,7 +18,7 @@ protected:
     int xVel = 0;
     int yVel = 0;
     int speed = 0;
-    int change = 10; // standardized increase for velocity, acceleration, and position
+    int change = 5; // standardized increase for velocity, acceleration, and position
     int size = 100;
     int healthPoints = 100;
     double rotationAngle = 0.0;

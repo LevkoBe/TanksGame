@@ -20,7 +20,7 @@ void GameManager::run() {
             }
         }
         else {
-            renderer.renderMenu(window, game && game->isFinished(), unit);
+            renderer.renderMenu(window);
             auto command = commander.checkButtonsPressed(window);
             handleMenuInteractions(command);
         }

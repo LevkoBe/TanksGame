@@ -25,6 +25,7 @@ class Projectile : public GameObject
         case Magnet:
         case BombaBall:
         case BlackHole:
+        case SelfGuided:
             return tankSize / 5;
         case LazerBeam:
         case Reducer:

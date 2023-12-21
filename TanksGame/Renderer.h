@@ -28,8 +28,8 @@ private:
 public:
     Renderer(int windowSize);
 
+    void renderMenu(sf::RenderWindow& window);
     void renderGame(sf::RenderWindow& window, GameState& gamestate);
-    void renderMenu(sf::RenderWindow& window, bool gameFinished, float unit);
 
 private:
     void drawBackground(sf::RenderWindow& window);
@@ -42,4 +42,9 @@ private:
 
     void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
     void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
+
+    void drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, const sf::Font& font, float x, float y,
+        const std::string& leftButtonText, const std::string& rightButtonText);
+    void drawButton(sf::RenderWindow& window, const std::string& text, const sf::Font& font, const sf::Color& fillColor, float x, float y);
+
 };

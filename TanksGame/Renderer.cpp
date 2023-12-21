@@ -49,7 +49,7 @@ void Renderer::renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, c
 
 void Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.clear();
-    drawBackground(window);
+    //drawBackground(window);
 
     if (gamestate.userTank->getHP() <= 0) {
         renderGameOverText(window, "You lost!", windowSize / 2, windowSize / 2, sf::Color::Red);
@@ -65,26 +65,59 @@ void Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.display();
 }
 
-void Renderer::renderMenu(sf::RenderWindow& window, bool gameFinished, float unit) {
+void Renderer::drawButton(sf::RenderWindow& window, const std::string& text, const sf::Font& font, const sf::Color& fillColor, float x, float y) {
+    sf::Text buttonText(text, font, 40);
+    buttonText.setFillColor(sf::Color::White);
+    buttonText.setPosition(x, y);
+
+    sf::RectangleShape buttonRect(sf::Vector2f(buttonText.getGlobalBounds().width + 20, buttonText.getGlobalBounds().height + 10));
+    buttonRect.setPosition(x - 10, y - 5);
+    buttonRect.setFillColor(fillColor);
+
+    window.draw(buttonRect);
+    window.draw(buttonText);
+}
+
+void Renderer::drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, const sf::Font& font, float x, float y,
+    const std::string& leftButtonText, const std::string& rightButtonText) {
+    sf::Text labelText(label, font, 30);
+    labelText.setFillColor(sf::Color::White);
+    labelText.setPosition(x, y);
+
+    // Draw label
+    window.draw(labelText);
+
+    // Draw left button
+    drawButton(window, leftButtonText, font, sf::Color::Green, x - 50.0f, y + 30.0f);
+
+    // Draw right button
+    drawButton(window, rightButtonText, font, sf::Color::Green, x + 50.0f, y + 30.0f);
+}
+
+void Renderer::renderMenu(sf::RenderWindow& window) {
     window.clear();
 
     // Draw "Play" button
-    sf::RectangleShape playButton(sf::Vector2f(3 * unit, unit));
-    playButton.setPosition(window.getSize().x / 2 - 1.5 * unit, window.getSize().y / 2 - unit / 2);
-    playButton.setFillColor(sf::Color::Yellow);
-    window.draw(playButton);
-    renderGameOverText(window, "Play", windowSize / 2, windowSize / 2, sf::Color(255, 153, 51));
-
-    // Draw "To Menu" button if the game is finished
-    if (gameFinished) {
-        sf::RectangleShape toMenuButton(sf::Vector2f(100.0f, 50.0f));
-        toMenuButton.setPosition(window.getSize().x / 2 - 50.0f, window.getSize().y / 2 + 50.0f);
-        toMenuButton.setFillColor(sf::Color::Blue);
-        window.draw(toMenuButton);
+    sf::Font playFont;
+    if (playFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
+        drawButton(window, "Play", playFont, sf::Color::Yellow, window.getSize().x / 2 - 50, window.getSize().y / 4 - 20);
     }
+    else {
+        std::cerr << "Failed to load font for the 'Play' button!" << std::endl;
+    }
+
+    // Draw "Quit" button
+    drawButton(window, "Quit", playFont, sf::Color::Red, window.getSize().x / 2 - 50.0f, window.getSize().y * 3 / 4);
+
+    // Draw "Difficulty" label with buttons "-" on the left and "+" on the right
+    drawLabelWithButtons(window, "Difficulty", playFont, window.getSize().x / 4, window.getSize().y / 2 - 20, "-", "+");
+
+    // Draw "Map Size" label with buttons "-" and "+" as well
+    drawLabelWithButtons(window, "Map Size", playFont, window.getSize().x * 3 / 4 - 60.0f, window.getSize().y / 2 - 20, "-", "+");
 
     window.display();
 }
+
 
 
 void Renderer::drawBackground(sf::RenderWindow& window) {
@@ -166,17 +199,12 @@ void Renderer::renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Ta
 
 void Renderer::renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles) {
     for (const auto& projectile : *projectiles) {
-        sf::Texture projectileTexture;
-        if (projectileTexture.loadFromFile(projectile.getImageName())) {
-            sf::Sprite projectileSprite(projectileTexture);
-            projectileSprite.setOrigin(projectileSprite.getLocalBounds().width / 2, projectileSprite.getLocalBounds().height / 2);
-            projectileSprite.setPosition(static_cast<float>(projectile.getPos().first), static_cast<float>(projectile.getPos().second));
-            float scaleFactor = static_cast<float>(projectile.getSize()) / projectileSprite.getLocalBounds().width;
-            projectileSprite.setScale(scaleFactor, scaleFactor);
-            window.draw(projectileSprite);
-        }
-        else {
-            std::cerr << "Failed to load projectile texture: " << projectile.getImageName() << std::endl;
-        }
+        sf::Color Gray(170, 170, 170);
+        sf::CircleShape projectileCircle(projectile.getSize() / 2.0f);
+        projectileCircle.setOrigin(projectileCircle.getRadius(), projectileCircle.getRadius());
+        projectileCircle.setPosition(static_cast<float>(projectile.getPos().first), static_cast<float>(projectile.getPos().second));
+        projectileCircle.setFillColor(Gray);
+        window.draw(projectileCircle);
     }
 }
+
