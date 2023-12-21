@@ -11,7 +11,6 @@ private:
     const double movementSpeed = 5.0;
     int windowSize = 900;
     int gridSize = 10;
-    int difficulty = 5;
     sf::Font font;
     sf::Text text;
     sf::Sprite backgroundSprite;
@@ -28,7 +27,7 @@ private:
 public:
     Renderer(int windowSize);
 
-    void renderMenu(sf::RenderWindow& window);
+    void renderMenu(sf::RenderWindow& window, int gridSize, int difficulty);
     void renderGame(sf::RenderWindow& window, GameState& gamestate);
 
 private:

@@ -22,7 +22,7 @@ void GameManager::run() {
             }
         }
         else {
-            renderer.renderMenu(window);
+            renderer.renderMenu(window, gridSize, difficulty);
             auto command = commander.handleMenuInteractions(window);
             handleMenuInteractions(command);
         }
@@ -41,18 +41,19 @@ void GameManager::handleMenuInteractions(Command command) {
         }
         break;
     case SecondLeftPressed:
-        gridSize--;
+        gridSize = gridSize <= 2 ? gridSize : --gridSize;
         break;
     case SecondRightPressed:
         gridSize++;
         break;
     case ThirdLeftPressed:
-        difficulty--;
+        difficulty = difficulty <= 0 ? difficulty : --difficulty;
         break;
     case ThirdRightPressed:
         difficulty++;
         break;
     case FourthButtonPressed:
+        window.close();
         break;
     default:
         break;

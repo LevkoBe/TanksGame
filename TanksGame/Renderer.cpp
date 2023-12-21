@@ -96,7 +96,7 @@ void Renderer::drawLabelWithButtons(sf::RenderWindow& window, const std::string&
     drawButton(window, rightButtonText, font, sf::Color(205, 92, 59, 255), windowSize * 5 / 6, centerY, height);
 }
 
-void Renderer::renderMenu(sf::RenderWindow& window) {
+void Renderer::renderMenu(sf::RenderWindow& window, int gridSize, int difficulty) {
     window.clear();
 
     sf::Font playFont;
@@ -105,7 +105,7 @@ void Renderer::renderMenu(sf::RenderWindow& window) {
     drawButton(window, "Play", playFont, sf::Color::Yellow, windowSize / 2, windowSize / 8, windowSize / 4);
     drawButton(window, "Quit", playFont, sf::Color::Red, windowSize / 2, windowSize * 7 / 8, windowSize / 4);
 
-    std::string buttonText = "Map size: " + std::to_string(difficulty);
+    std::string buttonText = "Map size: " + std::to_string(gridSize);
     drawLabelWithButtons(window, buttonText, playFont, windowSize * 3 / 8, windowSize / 4, "-", "+");
 
     buttonText = "Difficulty: " + std::to_string(difficulty);

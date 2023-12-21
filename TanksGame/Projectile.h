@@ -18,7 +18,7 @@ class Projectile : public GameObject
         switch (projectile)
         {
         case CannonBall:
-            return tankSize / 10;
+            return tankSize / 20;
         case FireBall:
         case SnowBall:
         case Chip:
