@@ -1,7 +1,7 @@
 enum GameRunningState {
 	Running,
-	Win,
-	Lose,
-	Pause,
+	Won,
+	Lost,
+	Paused,
 	Menu,
 };

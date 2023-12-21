@@ -16,51 +16,27 @@ void Renderer::renderGameObjects(sf::RenderWindow& window, const GameState& game
     renderProjectiles(window, gamestate.projectiles);
 }
 
-void Renderer::renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor) {
-
-    text.setFont(font);
-    text.setString(textString);
-    text.setCharacterSize(100);
-
-    sf::FloatRect textBounds = text.getLocalBounds();
-    text.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
-
-    text.setPosition(xPos, yPos);
-    text.setFillColor(textColor);
-
-    renderTextWithOutline(text, window, sf::Color::Black);
-}
-
-void Renderer::renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor) {
-    sf::Color textColor = text.getFillColor();
-    text.setOutlineColor(outlineColor);
-    text.setOutlineThickness(2.0);
-
-    window.draw(text);
-
-    text.setFillColor(textColor);
-    text.setOutlineThickness(0.0);
-}
-
 GameRunningState Renderer::renderGame(sf::RenderWindow& window, GameState& gamestate) {
     window.clear();
     //drawBackground(window);
 
     if (gamestate.userTank->getHP() <= 0) {
-        renderGameOverText(window, "You lost!", windowSize / 2, windowSize / 2, sf::Color::Red);
-        return Lose;
+        return Lost;
     }
-    else if (gamestate.bots == nullptr || gamestate.bots->empty()) {
-        sf::Color warmOrange(255, 153, 51);
-        renderGameOverText(window, "You won!", windowSize / 2, windowSize / 2, warmOrange);
-        return Win;
+    if (gamestate.bots == nullptr || gamestate.bots->empty()) {
+        return Won;
     }
-    else {
-        renderGameObjects(window, gamestate);
-    }
-
+    renderGameObjects(window, gamestate);
     window.display();
     return Running;
+}
+void Renderer::drawText(sf::RenderWindow& window, const std::string& text, const sf::Color& fillColor, float centerX, float centerY, int height) {
+
+    sf::Text buttonText(text, font, height / 2);
+    buttonText.setFillColor(fillColor);
+    buttonText.setOrigin(buttonText.getLocalBounds().width / 2, buttonText.getLocalBounds().height / 2);
+    buttonText.setPosition(centerX, centerY);
+    window.draw(buttonText);
 }
 
 void Renderer::drawButton(sf::RenderWindow& window, const std::string& text, const sf::Color& fillColor, float centerX, float centerY, int height) {
@@ -115,7 +91,7 @@ void Renderer::renderPause(sf::RenderWindow& window, std::vector<std::string> bu
     int number = buttons.size();
 
     for (int i = 0; i < number; i++) {
-        drawButton(window, buttons[i], sf::Color(27, 142, 186, 255), windowSize / 2, (2 * i + 1) * windowSize / number / 2, windowSize / number / 2);
+        drawButton(window, buttons[i], sf::Color(255, 153, 51), windowSize / 2, (2 * i + 1) * windowSize / number / 2, windowSize / number / 2);
     }
 
     window.display();
@@ -178,24 +154,8 @@ void Renderer::renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Ta
     sprite.setRotation(static_cast<float>(userTank->getAngle()));
     window.draw(sprite);
 
-    // Display userTank's HP
-    sf::Font stylishFont;
-    if (!stylishFont.loadFromFile("./RubikDoodleTriangles-Regular.ttf")) {
-        std::cerr << "Failed to load stylish font!" << std::endl;
-        return;
-    }
-
-    sf::Text hpText;
-    hpText.setFont(stylishFont);
-    hpText.setString("HP: " + std::to_string(userTank->getHP())); // Assuming getHP() returns the tank's HP
-    hpText.setCharacterSize(30);
-    hpText.setFillColor(sf::Color::White);
-
-    sf::FloatRect textBounds = hpText.getLocalBounds();
-    hpText.setOrigin(textBounds.left + textBounds.width / 2.0f, textBounds.top + textBounds.height / 2.0f);
-    hpText.setPosition(static_cast<float>(userTank->getPos().first), static_cast<float>(userTank->getPos().second - userTank->getSize() / 2));
-
-    renderTextWithOutline(hpText, window, sf::Color::Black);
+    std::string hpText = "HP: " + std::to_string(userTank->getHP());
+    drawText(window, hpText, sf::Color::Cyan, userTank->getPos().first, userTank->getPos().second - userTank->getSize() / 2, 40);
 }
 
 void Renderer::renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles) {

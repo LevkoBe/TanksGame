@@ -8,6 +8,8 @@ enum Command {
     MoveForward,
     MoveBackward,
     Shoot,
+    Pause,
+    FaulsyPause,
     FirstButtonPressed,
     SecondLeftPressed,
     SecondRightPressed,

@@ -21,11 +21,13 @@ public:
     GameManager(int windowSize);
 
     void run();
+    void pause();
 
 private:
     void initWindow();
     void handleMenuInteractions(Command command);
     void startNewGame();
+    void startNewGame(GameRun previousGame);
 
     void handlePause(Command command);
 };

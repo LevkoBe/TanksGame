@@ -6,6 +6,10 @@ window(sf::VideoMode(windowSize, windowSize), "Tank Game"), renderer(windowSize)
     commander.setWindowSize(windowSize);
 }
 
+void GameManager::pause() {
+    runningState = Paused;
+}
+
 void GameManager::run() {
     initWindow();
 
@@ -14,20 +18,25 @@ void GameManager::run() {
             if (runningState == Running)
             {
                 auto commands = move(commander.processEvents(window));
-                auto gamestate = game->update(move(commands));
-                runningState = renderer.renderGame(window, gamestate);
+                for (auto& command : commands) {
+                    if (command == Pause) { pause(); }
+                }
+                if (runningState != Paused) {
+                    auto gamestate = game->update(move(commands));
+                    runningState = renderer.renderGame(window, gamestate);
+                }
             }
             else {
                 int buttonsNumber = 2;
                 switch (runningState)
                 {
-                case Win:
+                case Won:
                     renderer.renderPause(window, move(std::vector<std::string>{"Next level", "Menu"}));
                     break;
-                case Lose:
+                case Lost:
                     renderer.renderPause(window, move(std::vector<std::string>{"Restart", "Menu"}));
                     break;
-                case Pause:
+                case Paused:
                     renderer.renderPause(window, move(std::vector<std::string>{"Continue", "Restart", "Menu"}));
                     buttonsNumber++;
                     break;
@@ -53,17 +62,18 @@ void GameManager::handlePause(Command command) {
     case FirstButtonPressed:
         switch (runningState)
         {
-        case Win:
+        case Won:
             difficulty++;
-        case Lose:
+        case Lost:
             startNewGame();
-        case Pause:
+        case Paused:
             runningState = Running;
         default:
             break;
         }
         break;
     case SecondLeftPressed:
+        //startNewGame(std::move(*game));
         startNewGame();
         runningState = Running;
         break;
@@ -72,7 +82,7 @@ void GameManager::handlePause(Command command) {
     case LastButtonPressed:
         game.reset(); // nullptr => menu
         break;
-    case None:
+    case Menu:
         break;
     default:
         break;
@@ -109,6 +119,10 @@ void GameManager::handleMenuInteractions(Command command) {
 
 void GameManager::startNewGame() {
     game = std::make_unique<GameRun>(windowSize, gridSize, difficulty);
+}
+
+void GameManager::startNewGame(GameRun previousGame) {
+    game = std::make_unique<GameRun>(windowSize, gridSize, difficulty, std::move(previousGame));
 }
 
 void GameManager::initWindow() {

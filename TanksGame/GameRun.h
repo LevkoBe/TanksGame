@@ -27,6 +27,7 @@ private:
 
 public:
     GameRun(int windowSize, int gridSize, int difficulty);
+    GameRun(int windowSize, int gridSize, int difficulty, GameRun previousGame);
 
     bool isFinished() { return false; }
 
@@ -36,6 +37,7 @@ public:
     std::pair<int, int> getPxCoordinates(int mapCoordX, int mapCoordY);
 
     void createMap();
+    void restoreMap();
 
     float calculateRotationAngle(int startX, int startY, int targetX, int targetY) const;
 

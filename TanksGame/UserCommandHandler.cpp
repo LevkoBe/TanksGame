@@ -129,4 +129,11 @@ void UserCommandHandler::handleKeyEvent(sf::Event& event) {
     else if (event.key.code == sf::Keyboard::Space) {
         commands.push_back(Shoot);
     }
+    else if (event.key.code == sf::Keyboard::Escape) {
+        commands.push_back(Pause);
+    }
+    else if (event.key.code == sf::Keyboard::Escape && event.key.control) {
+        commands.push_back(FaulsyPause);
+    }
 }
+

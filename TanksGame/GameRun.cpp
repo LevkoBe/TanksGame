@@ -6,8 +6,25 @@
 #include <windows.h>
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
-      cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
+cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
     createMap();
+    for (int i = 0; i < difficulty; i++)
+    {
+        allBots->push_back(BotTank(i + 1, cellSize));
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        addBot(i);
+    }
+    // rotate userTank accordingly to map
+    Node nextCell = pathfinder.findNextCell(0, 0, gridSize - 1, gridSize - 1);
+    userTank->setAngle(calculateRotationAngle(0, 0, nextCell.x, nextCell.y));
+}
+
+GameRun::GameRun(int windowSize, int gridSize, int difficulty, GameRun previousGame) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
+cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
+    wallsMap = move(previousGame.wallsMap);
+    restoreMap();
     for (int i = 0; i < difficulty; i++)
     {
         allBots->push_back(BotTank(i + 1, cellSize));
@@ -76,6 +93,30 @@ void GameRun::createMap() {
                     walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, image));
                     (*wallsMap)[i][j] = true;
                 }
+            }
+        }
+    }
+}
+
+void GameRun::restoreMap() {
+    std::vector<std::string> wallTextures = FolderReader::GetFilesInDirectory("./images/walls");
+    int wallSize = cellSize;
+    for (int i = 0; i < gridSize; i++)
+    {
+        for (int j = 0; j < gridSize; j++)
+        {
+            if ((*wallsMap)[i][j] == true)
+            {
+                int xPos = wallSize * i;
+                int yPos = wallSize * j;
+
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                std::uniform_int_distribution<size_t> distribution(0, 100);
+                size_t randomIndex = distribution(gen);
+
+                std::string image = wallTextures[randomIndex % (wallTextures.size() - 1)];
+                walls->push_back(GameObject(xPos, yPos, wallSize, 0, 0, image));
             }
         }
     }

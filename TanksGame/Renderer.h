@@ -41,11 +41,9 @@ private:
     void renderUserTank(sf::RenderWindow& window, const std::shared_ptr<Tank>& userTank);
     void renderProjectiles(sf::RenderWindow& window, const std::shared_ptr<std::vector<Projectile>>& projectiles);
 
-    void renderGameOverText(sf::RenderWindow& window, const std::string& textString, int xPos, int yPos, const sf::Color& textColor);
-    void renderTextWithOutline(sf::Text& text, sf::RenderWindow& window, const sf::Color& outlineColor);
-
     void drawLabelWithButtons(sf::RenderWindow& window, const std::string& label, int centerY, int height,
         const std::string& leftButtonText, const std::string& rightButtonText);
+    void drawText(sf::RenderWindow& window, const std::string& text, const sf::Color& fillColor, float centerX, float centerY, int height);
     void drawButton(sf::RenderWindow& window, const std::string& text, const sf::Color& fillColor, float centerX, float centerY, int height);
 
 };
