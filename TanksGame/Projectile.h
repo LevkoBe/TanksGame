@@ -64,7 +64,8 @@ public:
     bool hitsWalls(int x, int y, std::vector<Projectile>& projectiles, std::vector<GameObject>& walls, std::vector<std::vector<bool>>& wallsMap) {
 
         for (auto& wall : walls) {
-            if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, getSize() / 4))
+            int radiusSize = size > 4 ? size / 4 : 1;
+            if (CollisionHandler::squareCircleColliding(wall.getPos().first, wall.getPos().second, wall.getSize(), x, y, radiusSize))
             {
                 if (damageObject(wall)) {
                     auto position = PathFinder::calculatePositionOnBinaryMap(wall.getPos(), wall.getSize());

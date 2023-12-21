@@ -31,10 +31,10 @@ void GameManager::run() {
                 switch (runningState)
                 {
                 case Won:
-                    renderer.renderPause(window, move(std::vector<std::string>{"Next level", "Menu"}));
+                    renderer.renderPause(window, move(std::vector<std::string>{"You won!\nNext level", "Menu"}));
                     break;
                 case Lost:
-                    renderer.renderPause(window, move(std::vector<std::string>{"Restart", "Menu"}));
+                    renderer.renderPause(window, move(std::vector<std::string>{"You lost...\nRestart", "Menu"}));
                     break;
                 case Paused:
                     renderer.renderPause(window, move(std::vector<std::string>{"Continue", "Restart", "Menu"}));
@@ -65,7 +65,7 @@ void GameManager::handlePause(Command command) {
         case Won:
             difficulty++;
         case Lost:
-            startNewGame();
+            startNewGame(std::move(*game));
         case Paused:
             runningState = Running;
         default:
@@ -73,8 +73,7 @@ void GameManager::handlePause(Command command) {
         }
         break;
     case SecondLeftPressed:
-        //startNewGame(std::move(*game));
-        startNewGame();
+        startNewGame(std::move(*game));
         runningState = Running;
         break;
     case ThirdLeftPressed:
@@ -103,7 +102,7 @@ void GameManager::handleMenuInteractions(Command command) {
         gridSize++;
         break;
     case ThirdLeftPressed:
-        difficulty = difficulty <= 0 ? difficulty : --difficulty;
+        difficulty = difficulty <= 1 ? difficulty : --difficulty;
         break;
     case ThirdRightPressed:
         difficulty++;

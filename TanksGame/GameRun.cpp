@@ -22,8 +22,7 @@ cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), 
 }
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty, GameRun previousGame) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
-cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
-    wallsMap = move(previousGame.wallsMap);
+cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), wallsMap(std::move(previousGame.wallsMap)), pathfinder(wallsMap, gridSize) {
     restoreMap();
     for (int i = 0; i < difficulty; i++)
     {

@@ -91,7 +91,7 @@ void Renderer::renderPause(sf::RenderWindow& window, std::vector<std::string> bu
     int number = buttons.size();
 
     for (int i = 0; i < number; i++) {
-        drawButton(window, buttons[i], sf::Color(255, 153, 51), windowSize / 2, (2 * i + 1) * windowSize / number / 2, windowSize / number / 2);
+        drawButton(window, buttons[i], sf::Color(255, 153, 51), windowSize / 2, (2 * i + 1) * windowSize / number / 2, windowSize / number / 3);
     }
 
     window.display();
