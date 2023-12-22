@@ -6,8 +6,7 @@
 #include <windows.h>
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
-cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize) {
-    createMap();
+cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), pathfinder(wallsMap, gridSize), originalMap(std::make_shared<std::vector<std::vector<bool>>>(createMap())) {
     for (int i = 0; i < difficulty; i++)
     {
         allBots->push_back(BotTank(i + 1, cellSize));
@@ -22,7 +21,8 @@ cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), 
 }
 
 GameRun::GameRun(int windowSize, int gridSize, int difficulty, GameRun previousGame) : windowSize(windowSize), level(difficulty), gridSize(gridSize),
-cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), wallsMap(std::move(previousGame.wallsMap)), pathfinder(wallsMap, gridSize) {
+cellSize(windowSize / gridSize), userTank(new Tank(difficulty * 10, cellSize)), wallsMap(std::move(previousGame.originalMap)), 
+originalMap(std::make_shared<std::vector<std::vector<bool>>>(*wallsMap)), pathfinder(wallsMap, gridSize) {
     restoreMap();
     for (int i = 0; i < difficulty; i++)
     {
@@ -69,10 +69,11 @@ float GameRun::calculateRotationAngle(int startX, int startY, int targetX, int t
     return atan2(dy, dx) * 180.0 / M_PI + 90.0;
 }
 
-void GameRun::createMap() {
+std::vector<std::vector<bool>> GameRun::createMap() {
     Map map(gridSize);
     std::vector<std::string> wallTextures = FolderReader::GetFilesInDirectory("./images/walls");
     int wallSize = cellSize;
+    wallsMap = std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
     for (int i = 0; i < gridSize; i++)
     {
         for (int j = 0; j < gridSize; j++)
@@ -95,6 +96,7 @@ void GameRun::createMap() {
             }
         }
     }
+    return *wallsMap;
 }
 
 void GameRun::restoreMap() {

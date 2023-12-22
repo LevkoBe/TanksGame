@@ -23,6 +23,8 @@ private:
     std::shared_ptr<std::vector<Projectile>> projectiles = std::make_shared<std::vector<Projectile>>();
     std::shared_ptr<std::vector<std::vector<bool>>> wallsMap = 
         std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
+    std::shared_ptr<std::vector<std::vector<bool>>> originalMap = 
+        std::make_shared<std::vector<std::vector<bool>>>(gridSize, std::vector<bool>(gridSize, false));
     PathFinder pathfinder;
 
 public:
@@ -36,7 +38,7 @@ public:
 
     std::pair<int, int> getPxCoordinates(int mapCoordX, int mapCoordY);
 
-    void createMap();
+    std::vector<std::vector<bool>> createMap();
     void restoreMap();
 
     float calculateRotationAngle(int startX, int startY, int targetX, int targetY) const;
